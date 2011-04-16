@@ -6,7 +6,6 @@ from test.test_case import TestCase
 import time
 import pyamf
 
-
 class Zt_Talker(TestCase):
 
     def setUp(self):
@@ -20,8 +19,12 @@ class Zt_Talker(TestCase):
     def tearDown(self):
         self.listener.close()
 
-    def test_(self):
+    def test_policy_xml(self):
         recv = self.sender.send(self.data)
-        obj = pyamf.decode(recv).readElement()
-        self.assertEqual(obj, self.data)
+        self.assertEqual(recv, self.listener.policy_xml + '\0')
+
+        self.sender.send(self.data)
+        recv = self.sender.send(self.data)
+        obj = self.sender.decode(recv)
+        self.assertEqual(recv, self.listener.policy_xml + '\0')
 

@@ -1,8 +1,9 @@
 # coding: utf8
 
+from common import Common
 from packer import Packer
-import socket
 import pyamf
+import socket
 
 
 class BaseSender(object):
@@ -21,10 +22,12 @@ class BaseSender(object):
     def close(self):
         self.sock.close()
 
-class Sender(BaseSender):
+class Sender(Common, Packer, BaseSender):
 
-    packer = Packer()
+    def __init__(self, host, port):
+        BaseSender.__init__(self, host, port)
+#        BaseSender.send(self, '<policy-file-request/>\0')
 
     def send(self, data):
         data = pyamf.encode(data).read()
-        return BaseSender.send(self, self.packer.pack(data))
+        return BaseSender.send(self, self.pack(data))

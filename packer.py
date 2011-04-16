@@ -9,6 +9,7 @@ class Packer():
 
     def pack(self, data):
         size = len(data)
+        print size
         data = struct.pack('!I%ss' % size, size, data)
         return data
 
