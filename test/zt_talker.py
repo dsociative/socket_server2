@@ -18,13 +18,10 @@ class Zt_Talker(TestCase):
 
     def tearDown(self):
         self.listener.close()
+        self.sender.close()
 
-    def test_policy_xml(self):
-        recv = self.sender.send(self.data)
-        self.assertEqual(recv, self.listener.policy_xml + '\0')
-
+    def test_command(self):
         self.sender.send(self.data)
-        recv = self.sender.send(self.data)
-        obj = self.sender.decode(recv)
-        self.assertEqual(recv, self.listener.policy_xml + '\0')
+        command = self.listener.mapper.get(self.data['command'])
+        self.assertEqual(self.sender.parse(), command(self.data))
 

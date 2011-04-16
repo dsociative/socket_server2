@@ -3,10 +3,19 @@
 from common import Common
 from packer import Packer
 from threading import Thread, active_count
+import logging
+
+def log_debug(f):
+
+    def wrapper(obj, *args, **kwargs):
+        logging.debug('%s - %s' % (obj, f.func_name))
+
+        return f(obj, *args, **kwargs)
+
+    return wrapper
 
 class Talker(Common, Packer, Thread):
 
-    listener = True
     time_out = 5
 
     def __init__(self, socket):
@@ -15,8 +24,10 @@ class Talker(Common, Packer, Thread):
         self.socket.settimeout(self.time_out)
         self.policy_requested = False
 
+    def __repr__(self):
+        return '<Talker %s>' % self.name
+
     def execute_cmd(self, params):
-        print active_count()
         command_id = params.get('command')
         if command_id:
             command = self.mapper.get(command_id)
@@ -30,18 +41,32 @@ class Talker(Common, Packer, Thread):
     def send(self, data):
         return self.socket.sendall(data + '\0')
 
+    def recive(self, count):
+        try:
+            return self.socket.recv(count)
+        except socket.time_out:
+            logging.debug('%s time out' % self.name)
+            return self.close()
+
+    @log_debug
     def run(self):
-        while self.listener and self.socket:
-            t = self.socket.recv(self.SBIN_SIZE)
-            size = self.packsize(t)
+        self.status = True
+
+        while self.status:
+            size = self.packsize(self.recive(self.SBIN_SIZE))
             if size:
                 data = self.unpack(size, self.socket.recv(size + 1))
                 resp = self.execute_cmd(self.decode(data))
                 self.response(resp)
 
-    def request_policy(self):
-        self.policy_requested = True
-        return self.socket.send(self.policy_xml)
+        logging.debug('%s exit' % self.name)
 
+
+    @log_debug
     def close(self):
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except socket.error, err:
+            logging.warning(err)
         self.socket.close()
+        self.status = False

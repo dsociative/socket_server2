@@ -6,7 +6,7 @@ import pyamf
 import socket
 
 
-class BaseSender(object):
+class Sender(Packer):
 
     def __init__(self, host, port):
         self.host = host
@@ -16,18 +16,17 @@ class BaseSender(object):
         self.sock.connect((self.host, self.port))
 
     def send(self, data):
-        self.sock.send(data)
-        return self.sock.recv(1024)
+        data = self.encode(data)
+        self.sock.send(self.pack(data))
+
+    def recv(self, size=1024):
+        return self.sock.recv(size)
+
+    def parse(self):
+        size = self.packsize(self.recv(self.SBIN_SIZE))
+        data = self.unpack(size, self.recv(size))
+        return self.decode(data)
 
     def close(self):
         self.sock.close()
 
-class Sender(Common, Packer, BaseSender):
-
-    def __init__(self, host, port):
-        BaseSender.__init__(self, host, port)
-#        BaseSender.send(self, '<policy-file-request/>\0')
-
-    def send(self, data):
-        data = pyamf.encode(data).read()
-        return BaseSender.send(self, self.pack(data))
