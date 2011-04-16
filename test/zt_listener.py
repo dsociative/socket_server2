@@ -10,20 +10,21 @@ class Zt_Listener_Threading(TestCase):
 
     def setUp(self):
         self.listener = Listener()
+        self.listener.start()
 
     def tearDown(self):
-        self.listener.close()
+        try:
+            self.listener.close()
+        except:
+            return
 
     def test_init(self):
-        active_threads = threading.active_count()
-        self.listener.start()
-        self.assertEqual(threading.active_count(), active_threads + 1)
-        self.listener.close()
-        time.sleep(1)
+        print threading.active_count()
+        self.wait_equal(self.listener.is_alive, True)
+        print threading.active_count()
 
     def test_close(self):
-        active_threads = threading.active_count()
-        self.listener.start()
+        print threading.active_count()
         self.listener.close()
-        time.sleep(1)
-        self.assertEqual(threading.active_count(), active_threads)
+        self.wait_equal(self.listener.is_alive, False)
+        print threading.active_count()

@@ -3,11 +3,12 @@
 from common import Common
 from talker import Talker
 from threading import Thread
+import logging
 import socket
 
 class Listener(Common, Thread):
 
-    status = True
+    status = False
     port = 8885
 
     def __init__(self):
@@ -24,23 +25,23 @@ class Listener(Common, Thread):
 
 
     def run(self):
-        self.policy_listener = PolicyListener()
-        self.policy_listener.start()
-        while self.srv and self.status:
+        Listener.status = True
+        while Listener.status:
             self.read()
 
     def read(self):
         self.srv.listen(self.queue_size)
         sock, addr = self.srv.accept()
-        print 'new connection'
         Talker(sock).start()
 
 
     def close(self):
-        self.status = False
-        if self.srv:
-            self.srv.close()
-            self.srv = None
+        try:
+            self.srv.shutdown(socket.SHUT_RDWR)
+        except socket.error, err:
+            logging.warning(err)
+        self.srv.close()
+        Listener.status = False
 
 class PolicyListener(Listener):
 
