@@ -1,10 +1,9 @@
 # coding: utf8
 
-from common import Common
+from handler import BaseHandler
 from packer import Packer
-from threading import Thread, active_count
 import logging
-import socket
+import select
 
 def log_debug(f):
 
@@ -15,63 +14,28 @@ def log_debug(f):
 
     return wrapper
 
-class Talker(Common, Packer, Thread):
+class Talker(BaseHandler, Packer):
 
-    time_out = 5
+    port = 8885
 
-    def __init__(self, socket):
-        Thread.__init__(self)
-        self.socket = socket
-        self.socket.settimeout(self.time_out)
-        self.policy_requested = False
-
-    def __repr__(self):
-        return '<Talker %s>' % self.name
-
-    def execute_cmd(self, params):
-        command_id = params.get('command')
-        if command_id:
-            command = self.mapper.get(command_id)
-            if command:
-                return command(params)
-
-    def response(self, params):
-        data = self.encode(params)
-        return self.send(self.pack(data))
-
-    def send(self, data):
-        return self.socket.sendall(data + '\0')
-
-    def recive(self, count):
-        try:
-            data = self.socket.recv(count)
-            if data:
-                return data
-            else:
-                self.close()
-        except socket.timeout:
-            return self.close()
-
-
-    def run(self):
-        logging.debug('%s run, active threads %s' % (self, active_count()))
-        self.status = True
-
-        while self.status:
-            size = self.packsize(self.recive(self.SBIN_SIZE))
-            if size:
-                data = self.unpack(size, self.socket.recv(size + 1))
-                resp = self.execute_cmd(self.decode(data))
-                self.response(resp)
-
-        logging.debug('%s exit' % self)
-
-
-    @log_debug
-    def close(self):
-        try:
-            self.socket.shutdown(socket.SHUT_RDWR)
-        except socket.error, err:
-            logging.warning(err)
-        self.socket.close()
-        self.status = False
+    def process(self, sock, event):
+        if event & select.EPOLLIN:
+            if sock.fileno() in self.buffer:
+                data = sock.recv(1024)
+                self.modify(sock, select.EPOLLOUT)
+#                data = sock.recv(1024)
+#                size = self.packsize(data[:4])
+#                print size
+#                if size:
+#                    print self.decode(self.unpack(size, data[size:]))
+#                del self.buffer[sock.fileno()]
+#                self.modify(sock, select.EPOLLOUT)
+#            else:
+#                self.buffer[sock.fileno()] = sock.recv(self.SBIN_SIZE)
+#                self.modify(sock, select.EPOLLIN)
+        elif event & select.EPOLLOUT:
+            print "OUT!!!!!!!!!"
+            d = self.pack({'qwe':1})
+            sock.send(self.encode(d) + '\0')
+            self.modify(sock, select.EPOLLIN)
+#            self.unregister(sock)
