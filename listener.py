@@ -15,7 +15,7 @@ class Listener(Common, Thread):
         Thread.__init__(self)
         self.queue_size = 32
         self.bind()
-        self.sockets = []
+        self.clients = []
 
     def bind(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,7 +32,11 @@ class Listener(Common, Thread):
     def read(self):
         self.srv.listen(self.queue_size)
         sock, addr = self.srv.accept()
-        Talker(sock).start()
+
+        talker = Talker(sock)
+        talker.start()
+
+        self.clients.append(talker)
 
 
     def close(self):

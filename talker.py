@@ -4,6 +4,7 @@ from common import Common
 from packer import Packer
 from threading import Thread, active_count
 import logging
+import socket
 
 def log_debug(f):
 
@@ -43,10 +44,14 @@ class Talker(Common, Packer, Thread):
 
     def recive(self, count):
         try:
-            return self.socket.recv(count)
-        except socket.time_out:
-            logging.debug('%s time out' % self.name)
+            data = self.socket.recv(count)
+            if data:
+                return data
+            else:
+                self.close()
+        except socket.timeout:
             return self.close()
+
 
     @log_debug
     def run(self):
@@ -59,7 +64,7 @@ class Talker(Common, Packer, Thread):
                 resp = self.execute_cmd(self.decode(data))
                 self.response(resp)
 
-        logging.debug('%s exit' % self.name)
+        logging.debug('%s exit' % self)
 
 
     @log_debug

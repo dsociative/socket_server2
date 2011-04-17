@@ -1,8 +1,7 @@
 # coding: utf8
 
-from common import Common
 from packer import Packer
-import pyamf
+import logging
 import socket
 
 
@@ -11,16 +10,17 @@ class Sender(Packer):
     def __init__(self, host, port):
         self.host = host
         self.port = port
+        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.connect((self.host, self.port))
+    def connect(self):
+        self.socket.connect((self.host, self.port))
 
     def send(self, data):
         data = self.encode(data)
-        self.sock.send(self.pack(data))
+        self.socket.send(self.pack(data))
 
     def recv(self, size=1024):
-        return self.sock.recv(size)
+        return self.socket.recv(size)
 
     def parse(self):
         size = self.packsize(self.recv(self.SBIN_SIZE))
@@ -28,5 +28,10 @@ class Sender(Packer):
         return self.decode(data)
 
     def close(self):
-        self.sock.close()
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except socket.error, err:
+            logging.warning(err)
+        self.socket.close()
+        self.status = False
 

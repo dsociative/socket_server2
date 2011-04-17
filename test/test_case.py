@@ -1,7 +1,11 @@
 # coding: utf8
 import time
 import unittest
+import logging
 
+logging_frm = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+logging_level = logging.DEBUG
+logging.basicConfig(format=logging_frm, level=logging_level)
 
 class TestCase(unittest.TestCase):
 
