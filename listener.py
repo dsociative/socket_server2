@@ -5,6 +5,7 @@ from talker import Talker
 from threading import Thread
 import logging
 import socket
+import time
 
 class Listener(Common, Thread):
 
@@ -21,6 +22,7 @@ class Listener(Common, Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind(('localhost', self.port))
+        sock.listen(self.queue_size)
         self.srv = sock
 
 
@@ -30,14 +32,12 @@ class Listener(Common, Thread):
             self.read()
 
     def read(self):
-        self.srv.listen(self.queue_size)
         sock, addr = self.srv.accept()
 
         talker = Talker(sock)
         talker.start()
 
         self.clients.append(talker)
-
 
     def close(self):
         try:

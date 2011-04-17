@@ -14,6 +14,7 @@ class Sender(Packer):
 
     def connect(self):
         self.socket.connect((self.host, self.port))
+        return self
 
     def send(self, data):
         data = self.encode(data)
@@ -23,7 +24,7 @@ class Sender(Packer):
         return self.socket.recv(size)
 
     def parse(self):
-        size = self.packsize(self.recv(self.SBIN_SIZE))
+        size = self.packsize(self.recv(self.SBIN_SIZE)) + 1
         data = self.unpack(size, self.recv(size))
         return self.decode(data)
 

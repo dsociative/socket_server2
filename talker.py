@@ -53,8 +53,8 @@ class Talker(Common, Packer, Thread):
             return self.close()
 
 
-    @log_debug
     def run(self):
+        logging.debug('%s run, active threads %s' % (self, active_count()))
         self.status = True
 
         while self.status:
