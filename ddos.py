@@ -17,7 +17,8 @@ def timer(diff=None):
 
 class Client(Thread):
 
-    delay = 1
+
+    delay = 0.1
     working = False
 
     param = {'param1':'param2', 'q':{'other':'me'}, 'command':'command'}
@@ -51,7 +52,6 @@ class Client(Thread):
             Client.timings.append(self.do_command(sender))
             time.sleep(self.delay)
         else:
-            print Client.working
             sender.close()
 
 
@@ -75,8 +75,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, quit)
     Client.working = True
 
-    for i in range(3000):
-        time.sleep(0.01)
+    for i in range(100):
         t = Client()
         t.setDaemon(True)
         t.start()

@@ -1,7 +1,9 @@
 # coding: utf8
 from common import Common
 from threading import Thread
-import socket, select
+import logging
+import socket
+import select
 
 
 class BaseHandler(Common, Thread):
@@ -15,7 +17,7 @@ class BaseHandler(Common, Thread):
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((self.address, self.port))
-        self.socket.listen(1)
+        self.socket.listen(200)
         self.socket.setblocking(0)
 
     def epoll_register(self, socket, type=select.EPOLLIN):
@@ -25,11 +27,12 @@ class BaseHandler(Common, Thread):
         self.clients[sock.fileno()] = sock
         self.epoll_register(sock, type)
 
+        logging.debug('register client %s' % len(self.clients))
+
     def modify(self, sock, type):
         self.epoll.modify(sock.fileno(), type)
 
     def unregister(self, sock):
-        print sock
         self.epoll.unregister(sock.fileno())
 #        sock.shutdown(socket.SHUT_WR)
         del self.clients[sock.fileno()]
@@ -47,7 +50,7 @@ class BaseHandler(Common, Thread):
         self.buffer = {}
 
         while self.working:
-            events = self.epoll.poll(1)
+            events = self.epoll.poll(200)
             for no, event in events:
                 if no == self.socket.fileno():
                     sock, address = self.socket.accept()

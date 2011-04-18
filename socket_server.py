@@ -18,6 +18,7 @@ class SocketServer(Daemon):
         self.polisy_caster = PolicyCaster()
         self.polisy_caster.start()
         self.talker.run()
+        self.close()
 
     def close(self, *q):
         self.polisy_caster.working = False
