@@ -1,49 +1,44 @@
 # coding: utf8
 
+from client import Client
+from common import Common
 from handler import BaseHandler
 from packer import Packer
 import logging
 import select
 import socket
 
-def log_debug(f):
-
-    def wrapper(obj, *args, **kwargs):
-        logging.debug('%s - %s' % (obj, f.func_name))
-
-        return f(obj, *args, **kwargs)
-
-    return wrapper
-
 class Talker(BaseHandler, Packer):
 
     port = 8885
+
+    def register(self, sock, type=select.POLLIN):
+        self.clients[sock.fileno()] = Client(sock, self.epoll)
+        self.epoll_register(sock, type)
+        logging.debug('register client %s' % len(self.clients))
 
     def recv(self, sock, size):
         try:
             data = sock.recv(size)
             if not data:
-                self.unregister(sock)
+                self.unregister(sock.fileno())
             else:
                 return data
         except socket.error, s:
             logging.warning(s)
-            self.unregister(sock)
+            self.unregister(sock.fileno())
 
-    def process(self, sock, event):
+    def process(self, client, event):
         logging.debug('talker clients %s' % len(self.clients))
 
         if event & select.EPOLLIN:
-            print 'IN'
-            data = self.recv(sock, 1024)
+            data = self.recv(client.sock, 1024)
             if data:
                 size = self.packsize(data[:4])
-                self.decode(self.unpack(size, data[4:]))
-                self.modify(sock, select.EPOLLOUT)
+                params = self.decode(self.unpack(size, data[4:]))
+                client.listen(params)
 
         elif event & select.EPOLLOUT:
-            print 'OUT'
-            d = self.pack(self.encode({'command':'ok'}))
-            sock.send(d + '\0')
-            self.modify(sock, select.EPOLLIN)
+            if client.has_reponse:
+                client.reply()
 

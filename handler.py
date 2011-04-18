@@ -20,6 +20,9 @@ class BaseHandler(Common, Thread):
         self.socket.listen(200)
         self.socket.setblocking(0)
 
+        self.epoll = select.epoll()
+        self.epoll_register(self.socket)
+
     def epoll_register(self, socket, type=select.EPOLLIN):
         self.epoll.register(socket.fileno(), type)
 
@@ -32,25 +35,20 @@ class BaseHandler(Common, Thread):
     def modify(self, sock, type):
         self.epoll.modify(sock.fileno(), type)
 
-    def unregister(self, sock):
-        self.epoll.unregister(sock.fileno())
-#        sock.shutdown(socket.SHUT_WR)
-        del self.clients[sock.fileno()]
-        if self.buffer.has_key(sock.fileno()):
-            del self.buffer[sock.fileno()]
-        sock.close()
+    def unregister(self, filleno):
+        self.epoll.unregister(filleno)
+        self.clients[filleno].close()
+        del self.clients[filleno]
 
     def get(self, no):
         return self.clients.get(no)
 
     def run(self):
-        self.epoll = select.epoll()
-        self.epoll_register(self.socket)
         self.clients = {}
         self.buffer = {}
 
         while self.working:
-            events = self.epoll.poll(200)
+            events = self.epoll.poll(100)
             for no, event in events:
                 if no == self.socket.fileno():
                     sock, address = self.socket.accept()
@@ -58,7 +56,9 @@ class BaseHandler(Common, Thread):
                 else:
                     self.process(self.get(no), event)
 
+
     def close(self):
+        self.working = False
         self.epoll.unregister(self.socket.fileno())
         self.epoll.close()
         self.socket.close()

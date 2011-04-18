@@ -30,3 +30,12 @@ class TestCase(unittest.TestCase):
                 return do_assert()
 
             time.sleep(0.1)
+
+def log_debug(f):
+
+    def wrapper(obj, *args, **kwargs):
+        logging.debug('%s - %s' % (obj, f.func_name))
+
+        return f(obj, *args, **kwargs)
+
+    return wrapper

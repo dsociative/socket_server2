@@ -21,7 +21,9 @@ class Client(Thread):
     delay = 0.1
     working = False
 
-    param = {'param1':'param2', 'q':{'other':'me'}, 'command':'command'}
+    param = {"command": "user.authorization",
+             "uid": "6104128459101111038",
+             "auth_key": "599bf8e08afc3003d0db1a7f048eee49"}
     expected = {'command':'ok'}
 
     timings = []
@@ -39,8 +41,8 @@ class Client(Thread):
         sender.send(self.param)
         resp = sender.parse()
 
-        if resp != self.expected:
-            Client.working = False
+#        if resp != self.expected:
+#            Client.working = False
 
         Client.messages += 1
         return timer(time)
@@ -75,7 +77,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, quit)
     Client.working = True
 
-    for i in range(100):
+    for i in range(3000):
         t = Client()
         t.setDaemon(True)
         t.start()

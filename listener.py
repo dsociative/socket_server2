@@ -14,4 +14,4 @@ class PolicyCaster(BaseHandler):
             self.modify(sock, select.EPOLLOUT)
         elif event is select.EPOLLOUT:
             sock.send(self.policy_xml + '\0')
-            self.unregister(sock)
+            self.unregister(sock.fileno())
