@@ -1,9 +1,6 @@
 from test.ze_commands.authoriztion import Authorization
 
 
-class CmdNotFound(Exception):
-    pass
-
 class Mapper(object):
 
     auth = Authorization,

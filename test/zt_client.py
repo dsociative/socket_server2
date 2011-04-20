@@ -45,6 +45,24 @@ class Zt_Clien_Socket(Zt_Base):
         self.sender.connect()
         time.sleep(Talker.epoll_timeout)
         client = self.talker.clients.values().pop()
-        client.add_resp(resp)
+        client.add_resp(response)
         sender_request = self.sender.parse()
-        self.assertEqual(sender_request, resp)
+        self.assertEqual(sender_request, response)
+
+    def test_login(self):
+
+        data = {"command": "user.authorization",
+                 "uid": "6104128459101111038",
+                 "auth_key": "599bf8e08afc3003d0db1a7f048eee49"}
+
+        self.sender.connect()
+        time.sleep(Talker.epoll_timeout)
+        client = self.talker.clients.values().pop()
+
+        self.assertEqual(client.logged, False)
+        self.sender.send(data)
+        time.sleep(Talker.epoll_timeout)
+        self.assertEqual(client.logged, True)
+
+
+

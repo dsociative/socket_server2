@@ -11,7 +11,7 @@ class Authorization(BaseCommand):
     def execute(self, uid, auth_key):
 
         if self.checkSig(uid, auth_key):
-            pass
+            self.client.login(uid)
         else:
             self.msg.result = 2
             self.msg.result_text = 'bad auth_key'

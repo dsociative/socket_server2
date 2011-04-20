@@ -41,3 +41,10 @@ class Client(Common, Packer):
     def refresh_state(self):
         type = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
         self.poll.modify(self.fileno, type)
+
+    def login(self, uid):
+        self.uid = uid
+
+    @property
+    def logged(self):
+        return self.uid != None
