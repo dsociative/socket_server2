@@ -39,7 +39,7 @@ class Message(object):
         self.result = 1
         self.command = command
         self.time = int (time.mktime(time.localtime()))
-        self.result_text = ''
+        self.text = ''
         self.response = {}
 
     def __setitem__(self, item, value):
@@ -60,7 +60,7 @@ class Message(object):
                 'result': self.result,
                 'command': self.command,
                 'time': self.time,
-                'result_text': self.result_text,
+                'text': self.text,
                 'response': self.response
                 }
         return dict

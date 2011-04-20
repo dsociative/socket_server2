@@ -14,7 +14,7 @@ class Authorization(BaseCommand):
             self.client.login(uid)
         else:
             self.msg.result = 2
-            self.msg.result_text = 'bad auth_key'
+            self.msg.text = 'bad auth_key'
 
         return self.msg
 

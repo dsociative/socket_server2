@@ -7,10 +7,16 @@ class Mapper(object):
     command = ()
 
     def __init__(self):
-        self.namespace = {}
-        for cmd in self.auth:
-            self.namespace[cmd.name] = cmd
+        self.auth_space = {}
+        self.cmd_space = {}
 
-    def get(self, name):
-        cmd = self.namespace.get(name)
-        return cmd
+        for cmd in self.auth:
+            self.auth_space[cmd.name] = cmd
+        for cmd in self.command:
+            self.cmd_space[cmd.name] = cmd
+
+    def get(self, name, auth=False):
+        if not auth:
+            return self.auth_space.get(name)
+        else:
+            return self.cmd_space.get(name)

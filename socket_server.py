@@ -1,14 +1,20 @@
 # coding: utf8
 
+from common import Common
 from ext.daemon import Daemon
 from listener import PolicyCaster
 from talker import Talker
 from test.test_case import *
-import sys, os
+from test.ze_mapper import Mapper
+import os
+import sys
 
 class SocketServer(Daemon):
 
     def __init__(self, name, port, mapper):
+
+        self.port = port
+        self.mapper = mapper
 
         def named(s):
             return s % name
@@ -38,7 +44,7 @@ class SocketServer(Daemon):
 
 
 if __name__ == '__main__':
-    server = SocketServer('test')
+    server = SocketServer('test', 8885, Mapper())
     if 'start' in sys.argv:
         server.start()
     elif 'stop' in sys.argv:
