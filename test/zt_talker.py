@@ -1,25 +1,23 @@
 # coding: utf8
 
 from sender import Sender
-from socket_server import SocketServer
 from talker import Talker
 from test.test_case import TestCase
-import thread
 import time
 
 class Zt_Talker_Base(TestCase):
 
     def tearDown(self):
-        pass
-#        self.talker.close()
+        self.talker.close()
+        time.sleep(Talker.epoll_timeout)
 
 
 class Zt_Talker_Threading(Zt_Talker_Base):
 
     def setUp(self):
+        Talker.epoll_timeout = 0.1
         self.talker = Talker()
         self.talker.start()
-        time.sleep(0.4)
         self.sender = Sender('', self.talker.port)
 
     def test_init(self):
@@ -28,18 +26,7 @@ class Zt_Talker_Threading(Zt_Talker_Base):
     def test_close(self):
         self.wait_equal(self.talker.is_alive, True)
         self.talker.close()
-        time.sleep(0.4)
         self.wait_equal(self.talker.is_alive, False)
-
-    def test_client_out(self):
-        self.sender.connect()
-        time.sleep(0.2)
-
-        talker = self.listener.clients[0]
-        self.assertTrue(isinstance(talker, Talker))
-        self.wait_equal(talker.is_alive, True)
-        self.sender.close()
-        self.wait_equal(talker.is_alive, False)
 
 
 class Zt_Talker(Zt_Talker_Base):

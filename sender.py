@@ -17,16 +17,13 @@ class Sender(Packer):
         return self
 
     def send(self, data):
-        data = self.encode(data)
-        self.socket.send(self.pack(data))
+        self.socket.send(self.encode(data))
 
     def recv(self, size=1024):
         return self.socket.recv(size)
 
     def parse(self):
-        size = self.packsize(self.recv(self.SBIN_SIZE)) + 1
-        data = self.unpack(size, self.recv(size))
-        return self.decode(data)
+        return self.decode(self.recv())
 
     def close(self):
         try:

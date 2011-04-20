@@ -1,18 +1,16 @@
 # coding: utf8
 
+from packer import Packer
 from test.test_case import TestCase
 import pyamf
 
 class Zt_Packer(TestCase):
 
     def setUp(self):
-        self.data = {'param1':'param2', 'q':{'other':'me'}}
-        self.binary = pyamf.encode(self.data).read()
+        self.data = {'param1':'param2', '1':123, 'q':{'other':'me'}}
         self.packer = Packer()
 
-    def test_(self):
-        packed = self.packer.pack(self.binary)
-        size = self.packer.packsize(packed[:self.packer.SBIN_SIZE])
-        self.assertEqual(self.packer.unpack(size, packed[self.packer.SBIN_SIZE:]),
-                         self.binary)
+    def test_data(self):
+        self.encoded = self.packer.encode(self.data)
+        self.assertEqual(self.packer.decode(self.encoded), self.data)
 

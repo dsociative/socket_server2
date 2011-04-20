@@ -8,8 +8,8 @@ import select
 
 class BaseHandler(Common, Thread):
 
-    working = True
     port = 8885
+    epoll_timeout = 2
     address = ''
 
     def __init__(self):
@@ -17,7 +17,7 @@ class BaseHandler(Common, Thread):
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((self.address, self.port))
-        self.socket.listen(200)
+        self.socket.listen(5)
         self.socket.setblocking(0)
 
         self.epoll = select.epoll()
@@ -47,8 +47,8 @@ class BaseHandler(Common, Thread):
         self.clients = {}
         self.buffer = {}
 
-        while self.working:
-            events = self.epoll.poll(100)
+        while not self.epoll.closed:
+            events = self.epoll.poll(self.epoll_timeout)
             for no, event in events:
                 if no == self.socket.fileno():
                     sock, address = self.socket.accept()
@@ -58,8 +58,6 @@ class BaseHandler(Common, Thread):
 
 
     def close(self):
-        self.working = False
-        self.epoll.unregister(self.socket.fileno())
         self.epoll.close()
         self.socket.close()
 

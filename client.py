@@ -24,7 +24,7 @@ class Client(Common, Packer):
 
     def reply(self):
         resp = self.response.pop()
-        self.sock.send(self.pack(self.encode(resp)))
+        self.sock.send(self.encode(resp))
         self.refresh_state()
 
     @property

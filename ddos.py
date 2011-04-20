@@ -1,7 +1,9 @@
 # coding: utf8
 
+from logging import FileHandler
 from sender import Sender
 from threading import Thread
+import logging
 import os
 import signal
 import sys
@@ -17,8 +19,15 @@ def timer(diff=None):
 
 class Client(Thread):
 
+    logging_frm = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    logging_level = logging.DEBUG
+    logging.basicConfig(format=logging_frm, level=logging_level)
+    logger = logging.getLogger()
+    e = FileHandler(os.path.abspath('ddos.log'), 'w')
+    e.level = logging.DEBUG
+    logger.addHandler(e)
 
-    delay = 0.1
+    delay = 1
     working = False
 
     param = {"command": "user.authorization",
@@ -29,6 +38,7 @@ class Client(Thread):
     timings = []
     messages = 0
     count = 0
+    error = 0
 
     def connect(self):
         if self.working:
@@ -38,11 +48,17 @@ class Client(Thread):
     def do_command(self, sender):
         time = timer()
 
-        sender.send(self.param)
-        resp = sender.parse()
+        try:
+            sender.send(self.param)
+            resp = sender.parse()
+        except Exception, s:
+            Client.error += 1
+            self.logger.error(s)
+
 
 #        if resp != self.expected:
 #            Client.working = False
+
 
         Client.messages += 1
         return timer(time)
@@ -68,6 +84,7 @@ if __name__ == '__main__':
         print 'clients %s' % Client.count
         print 'delay %f sec' % (Client.delay)
         print 'messages %s' % Client.messages
+        print 'connection error %s' % Client.error
 
         print 'min timing %s' % min(Client.timings)
         print 'max timing %s' % max(Client.timings)

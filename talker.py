@@ -34,9 +34,7 @@ class Talker(BaseHandler, Packer):
         if event & select.EPOLLIN:
             data = self.recv(client.sock, 1024)
             if data:
-                size = self.packsize(data[:4])
-                params = self.decode(self.unpack(size, data[4:]))
-                client.listen(params)
+                client.listen(self.decode(data))
 
         elif event & select.EPOLLOUT:
             if client.has_reponse:

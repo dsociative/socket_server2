@@ -3,6 +3,10 @@
 import _struct as struct
 import pyamf
 
+class PackerDecodeError(Exception):
+
+    pass
+
 class Packer():
 
     SBIN_SIZE = 4
@@ -20,11 +24,22 @@ class Packer():
         if size:
             return data[:size]
 
+
+
     def decode(self, data):
-        data = pyamf.decode(data).readElement()
-        if data:
-            return data
+        if len(data) <= 4:
+            raise PackerDecodeError('lenght <= 4')
+
+        size = self.packsize(data[:self.SBIN_SIZE])
+        data = self.unpack(size, data[self.SBIN_SIZE:])
+
+        if not size:
+            raise PackerDecodeError('size not found')
+        elif size != len(data):
+            raise PackerDecodeError('size:%s != data length:%s' % (size, len(data)))
+
+        return pyamf.decode(data).readElement()
 
     def encode(self, params):
         data = pyamf.encode(params)
-        return data.read()
+        return self.pack(data.read()) + '\0'
