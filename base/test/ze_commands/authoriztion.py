@@ -1,6 +1,6 @@
 # coding: utf8
 
-from test.ze_commands.base import BaseCommand
+from base.test.ze_commands.base_command import BaseCommand
 import hashlib
 
 class Authorization(BaseCommand):

@@ -1,7 +1,6 @@
 # coding: utf8
 
 from client import Client
-from common import Common
 from handler import BaseHandler
 from packer import Packer
 import logging

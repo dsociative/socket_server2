@@ -2,6 +2,7 @@
 from common import Common
 from packer import Packer
 import select
+import logging
 
 class Client(Common, Packer):
 
@@ -14,9 +15,12 @@ class Client(Common, Packer):
 
     def listen(self, params):
         name = params.get('command')
-        cmd = self.mapper.get(name)
+        cmd = self.mapper.get(name, self.uid)
+        logging.info('client uid:%s command %s recieved' % (self.uid, name))
         if cmd:
             self.add_resp(cmd(self)(params))
+        else:
+            logging.error('%s command not found' % name)
 
     def add_resp(self, resp):
         self.response.insert(0, resp)

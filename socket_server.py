@@ -1,11 +1,10 @@
 # coding: utf8
-
-from common import Common
+from base.common import Common
+from base.listener import PolicyCaster
+from base.talker import Talker
+from base.test.ze_mapper import Mapper
 from ext.daemon import Daemon
-from listener import PolicyCaster
-from talker import Talker
-from test.test_case import *
-from test.ze_mapper import Mapper
+from http.http_socket import HttpSocket
 import os
 import sys
 
@@ -35,10 +34,12 @@ class SocketServer(Daemon):
         self.talker = Talker()
         self.polisy_caster = PolicyCaster()
         self.polisy_caster.start()
+        self.http_socket = HttpSocket(self.mapper, self.port + 1)
         self.talker.run()
 
     def close(self, *q):
         self.polisy_caster.close()
+        self.http_socket.stop()
         self.talker.close()
         sys.exit(0)
 
