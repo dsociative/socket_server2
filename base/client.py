@@ -13,6 +13,10 @@ class Client(Common, Packer):
 
         self.response = []
 
+    @property
+    def logger(self):
+        return logging.getLogger('Client %s - %s' % (self.sock.getpeername(), self.uid))
+
     def listen(self, params):
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)

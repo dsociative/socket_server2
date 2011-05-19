@@ -1,11 +1,16 @@
 # coding: utf8
 
+from base.packer import PackerDecodeError
 from client import Client
 from handler import BaseHandler
 from packer import Packer
 import logging
 import select
-import socket
+import sys
+import traceback
+
+def trace():
+    traceback.print_exc(file=sys.stderr)
 
 class Talker(BaseHandler, Packer):
 
@@ -23,8 +28,9 @@ class Talker(BaseHandler, Packer):
                 self.unregister(sock.fileno())
             else:
                 return data
-        except socket.error, s:
-            logging.warning(s)
+        except Exception, s:
+            logging.error('%s - %s' % (sock.getpeername(), s))
+            trace()
             self.unregister(sock.fileno())
 
     def process(self, client, event):
@@ -33,7 +39,12 @@ class Talker(BaseHandler, Packer):
         if event & select.EPOLLIN:
             data = self.recv(client.sock, 1024)
             if data:
-                client.listen(self.decode(data))
+                try:
+                    data = self.decode(data)
+                except PackerDecodeError, s:
+                    client.logger.error('Decode Error %s' % s)
+                else:
+                    client.listen(data)
 
         elif event & select.EPOLLOUT:
             if client.has_reponse:

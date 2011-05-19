@@ -37,8 +37,10 @@ class BaseHandler(Common, Thread):
 
     def unregister(self, filleno):
         self.epoll.unregister(filleno)
-        self.clients[filleno].close()
-        del self.clients[filleno]
+        sock = self.clients.get(filleno)
+        if sock:
+            sock.close()
+            del self.clients[filleno]
 
     def get(self, no):
         return self.clients.get(no)

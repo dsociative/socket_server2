@@ -4,7 +4,6 @@ import _struct as struct
 import pyamf
 
 class PackerDecodeError(Exception):
-
     pass
 
 class Packer():
@@ -23,8 +22,6 @@ class Packer():
     def unpack(self, size, data):
         if size:
             return data[:size]
-
-
 
     def decode(self, data):
         if len(data) <= 4:

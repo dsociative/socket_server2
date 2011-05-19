@@ -1,6 +1,5 @@
 # coding: utf8
 from base.common import Common
-from base.listener import PolicyCaster
 from base.talker import Talker
 from base.test.ze_mapper import Mapper
 from ext.daemon import Daemon
@@ -40,16 +39,12 @@ class SocketServer(Daemon):
         Talker.port = self.port
         Common.mapper = self.mapper
 
-
         self.talker = Talker()
-#        self.polisy_caster = PolicyCaster()
-#        self.polisy_caster.start()
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
         self.talker.run()
 
     def close(self, *q):
-#        self.polisy_caster.close()
         if self.http_port:
             self.http_socket.stop()
         self.talker.close()
