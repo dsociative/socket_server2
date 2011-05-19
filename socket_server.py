@@ -42,14 +42,14 @@ class SocketServer(Daemon):
 
 
         self.talker = Talker()
-        self.polisy_caster = PolicyCaster()
-        self.polisy_caster.start()
+#        self.polisy_caster = PolicyCaster()
+#        self.polisy_caster.start()
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
         self.talker.run()
 
     def close(self, *q):
-        self.polisy_caster.close()
+#        self.polisy_caster.close()
         if self.http_port:
             self.http_socket.stop()
         self.talker.close()
