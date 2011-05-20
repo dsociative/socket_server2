@@ -2,7 +2,6 @@
 
 from packer import Packer
 from test.test_case import TestCase
-import pyamf
 
 class Zt_Packer(TestCase):
 

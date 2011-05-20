@@ -52,10 +52,9 @@ class SocketServer(Daemon):
 
 
 if __name__ == '__main__':
-    server = SocketServer('test', 8885, Mapper())
-    if 'start' in sys.argv:
-        server.start()
-    elif 'stop' in sys.argv:
-        server.stop()
+    daemon = SocketServer('test', 8885, Mapper())
+    if daemon.process_argv():
+        pass
     else:
-        server.run()
+        daemon.run()
+
