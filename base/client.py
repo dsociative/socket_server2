@@ -12,19 +12,20 @@ class Client(Common, Packer):
         self.uid = uid
 
         self.response = []
+        self.peername = self.sock.getpeername()
 
     @property
     def logger(self):
-        return logging.getLogger('Client %s - %s' % (self.sock.getpeername(), self.uid))
+        return logging.getLogger('Client %s - %s' % (self.peername, self.uid))
 
     def listen(self, params):
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)
-        logging.info('client uid:%s command %s recieved' % (self.uid, name))
+        self.logger.info('command %s recieved' % name)
         if cmd:
             self.add_resp(cmd(self)(params))
         else:
-            logging.error('%s command not found' % name)
+            self.logger.warning('%s command not found' % name)
 
     def add_resp(self, resp):
         self.response.insert(0, resp)
