@@ -29,7 +29,6 @@ class Talker(BaseHandler, Packer):
             else:
                 return data
         except Exception, s:
-            logging.error('%s - %s' % (sock.getpeername(), s))
             trace()
             self.unregister(sock.fileno())
 
