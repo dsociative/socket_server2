@@ -17,6 +17,7 @@ class BaseHandler(Common, Thread):
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.bind((self.address, self.port))
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.listen(5)
         self.socket.setblocking(0)
 
