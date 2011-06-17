@@ -8,6 +8,8 @@ import logging
 import os
 import sys
 
+from signal import signal, SIGTERM, SIGINT
+
 class SocketServer(Daemon):
 
     def init_logging(self):
@@ -39,6 +41,9 @@ class SocketServer(Daemon):
         Talker.port = self.port
         Common.mapper = self.mapper
 
+        for sig in (SIGTERM, SIGINT):
+            signal(sig, lambda signum, stack_frame: self.close(1))
+
         self.talker = Talker()
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
@@ -48,6 +53,7 @@ class SocketServer(Daemon):
         if self.http_port:
             self.http_socket.stop()
         self.talker.close()
+        print 'is closed'
         sys.exit(0)
 
 

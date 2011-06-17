@@ -1,23 +1,20 @@
 # coding: utf8
 
+from base.common import trace
 from base.packer import PackerDecodeError
 from client import Client
 from handler import BaseHandler
 from packer import Packer
 import logging
 import select
-import sys
-import traceback
 
-def trace():
-    traceback.print_exc(file=sys.stderr)
 
 class Talker(BaseHandler, Packer):
 
     port = 8885
 
-    def register(self, sock, type=select.POLLIN):
-        self.clients[sock.fileno()] = Client(sock, self.epoll)
+    def register(self, sock, addr, type=select.POLLIN):
+        self.clients[sock.fileno()] = Client(sock, addr, self.epoll)
         self.epoll_register(sock, type)
         logging.debug('register client %s' % len(self.clients))
 

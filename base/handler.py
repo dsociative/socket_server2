@@ -1,9 +1,10 @@
 # coding: utf8
+from base.common import trace
 from common import Common
 from threading import Thread
 import logging
-import socket
 import select
+import socket
 
 
 class BaseHandler(Common, Thread):
@@ -16,9 +17,9 @@ class BaseHandler(Common, Thread):
         Thread.__init__(self)
 
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.bind((self.address, self.port))
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.listen(5)
+        self.socket.bind((self.address, self.port))
+        self.socket.listen(1)
         self.socket.setblocking(0)
 
         self.epoll = select.epoll()
@@ -27,7 +28,7 @@ class BaseHandler(Common, Thread):
     def epoll_register(self, socket, type=select.EPOLLIN):
         self.epoll.register(socket.fileno(), type)
 
-    def register(self, sock, type=select.POLLIN):
+    def register(self, sock, address, type=select.POLLIN):
         self.clients[sock.fileno()] = sock
         self.epoll_register(sock, type)
 
@@ -40,11 +41,19 @@ class BaseHandler(Common, Thread):
         self.epoll.unregister(filleno)
         sock = self.clients.get(filleno)
         if sock:
-            sock.close()
+            try:
+                sock.close()
+            except:
+                trace()
             del self.clients[filleno]
 
     def get(self, no):
         return self.clients.get(no)
+
+
+    def accept(self):
+        sock, address = self.socket.accept()
+        return self.register(sock, address)
 
     def run(self):
         self.clients = {}
@@ -54,8 +63,7 @@ class BaseHandler(Common, Thread):
             events = self.epoll.poll(self.epoll_timeout)
             for no, event in events:
                 if no == self.socket.fileno():
-                    sock, address = self.socket.accept()
-                    self.register(sock)
+                    sock = self.accept()
                 else:
                     self.process(self.get(no), event)
 

@@ -1,5 +1,10 @@
 # coding: utf8
 
+import sys
+import traceback
+
+def trace():
+    traceback.print_exc(file=sys.stderr)
 
 class Common(object):
 

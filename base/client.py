@@ -1,29 +1,38 @@
 # coding:
+from base.common import trace
 from common import Common
 from packer import Packer
-import select
 import logging
+import select
 
 class Client(Common, Packer):
 
-    def __init__(self, sock, poll, uid=None):
+    def __init__(self, sock, addr, poll, uid=None):
         self.sock = sock
         self.poll = poll
         self.uid = uid
 
         self.response = []
-        self.peername = self.sock.getpeername()
+        self.peername = addr
 
     @property
     def logger(self):
         return logging.getLogger('Client %s - %s' % (self.peername, self.uid))
+
+
+    def execute_cmd(self, params, cmd):
+        try:
+            return self.add_resp(cmd(self)(params))
+        except:
+            trace()
+            return None
 
     def listen(self, params):
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)
         self.logger.info('command %s recieved' % name)
         if cmd:
-            self.add_resp(cmd(self)(params))
+            self.execute_cmd(params, cmd)
         else:
             self.logger.warning('%s command not found' % name)
 
