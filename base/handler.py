@@ -1,4 +1,5 @@
 # coding: utf8
+from base.clients_map import ClientsMap
 from base.common import trace
 from common import Common
 from threading import Thread
@@ -24,6 +25,8 @@ class BaseHandler(Common, Thread):
 
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
+
+        self.clients = ClientsMap(self)
 
     def epoll_register(self, socket, type=select.EPOLLIN):
         self.epoll.register(socket.fileno(), type)
@@ -56,7 +59,6 @@ class BaseHandler(Common, Thread):
         return self.register(sock, address)
 
     def run(self):
-        self.clients = {}
         self.buffer = {}
 
         while not self.epoll.closed:

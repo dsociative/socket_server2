@@ -1,8 +1,8 @@
 # coding: utf8
 
-from sender import Sender
-from talker import Talker
-from test.test_case import TestCase
+from base.sender import Sender
+from base.talker import Talker
+from base.test.test_case import TestCase
 import time
 
 class Zt_Base(TestCase):
@@ -12,6 +12,7 @@ class Zt_Base(TestCase):
 
     def setUp(self):
         Talker.epoll_timeout = 0.1
+        Talker.port = 64535
         self.talker = Talker()
         self.talker.start()
         self.wait_equal(self.talker.is_alive, True)

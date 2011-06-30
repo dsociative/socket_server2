@@ -11,7 +11,8 @@ class Client(Common, Packer):
         self.sock = sock
         self.poll = poll
         self.uid = uid
-
+        self.fileno = sock.fileno()
+        print self.fileno
         self.response = []
         self.peername = addr
 
@@ -45,9 +46,9 @@ class Client(Common, Packer):
         self.sock.send(self.encode(resp))
         self.refresh_state()
 
-    @property
-    def fileno(self):
-        return self.sock.fileno()
+#    @property
+#    def fileno(self):
+#        return self.sock.fileno()
 
     def close(self):
         return self.sock.close()

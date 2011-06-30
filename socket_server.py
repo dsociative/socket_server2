@@ -24,6 +24,8 @@ class SocketServer(Daemon):
         self.mapper = mapper
         self.http_port = http_port
 
+        Talker.port = self.port
+        self.talker = Talker()
 
         def named(s):
             return s % name
@@ -38,13 +40,11 @@ class SocketServer(Daemon):
 
     def run(self):
         self.init_logging()
-        Talker.port = self.port
         Common.mapper = self.mapper
 
         for sig in (SIGTERM, SIGINT):
             signal(sig, lambda signum, stack_frame: self.close(1))
 
-        self.talker = Talker()
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
         self.talker.run()
