@@ -31,10 +31,11 @@ class ClientsMap(object):
         client.uid = uid
         self.users[client.uid] = client
 
-    def send(self, uid, msg):
-        client = self.users.get(uid)
-        if client:
-            client.add_resp(msg)
+    def send(self, msg, *uids):
+        for uid in uids:
+            client = self.users.get(uid)
+            if client:
+                client.add_resp(msg)
 
     def __len__(self):
         return len(self.clients)
