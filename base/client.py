@@ -12,7 +12,6 @@ class Client(Common, Packer):
         self.poll = poll
         self.uid = uid
         self.fileno = sock.fileno()
-        print self.fileno
         self.response = []
         self.peername = addr
 
@@ -23,7 +22,9 @@ class Client(Common, Packer):
 
     def execute_cmd(self, params, cmd):
         try:
-            return self.add_resp(cmd(self)(params))
+
+            resp = cmd(self)(params)
+            return self.add_resp(resp)
         except:
             trace()
             return None
@@ -45,10 +46,6 @@ class Client(Common, Packer):
         resp = self.response.pop()
         self.sock.send(self.encode(resp))
         self.refresh_state()
-
-#    @property
-#    def fileno(self):
-#        return self.sock.fileno()
 
     def close(self):
         return self.sock.close()
