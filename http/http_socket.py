@@ -2,7 +2,7 @@
 from tornado.escape import json_encode
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-from tornado.web import url, RequestHandler
+from tornado.web import url, RequestHandler, asynchronous
 import json
 import logging
 import thread
@@ -46,15 +46,16 @@ class HttpSocketHandler(Request):
     def response(self, msg):
         self.finish(json_encode(msg.to_dict()))
 
-    def authorization(self, params):
-        return self.mapper.auth(self.client)(params)
+    @property
+    def authorization(self):
+        return self.mapper.auth(self.client)
 
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
 
         msg = self.authorization(params)
-        if msg.result != 1:
+        if msg.result != 1 or params['command'] == self.authorization.name:
             return self.response(msg)
 
         command = self.mapper.get(command_id, self.client.uid)
