@@ -8,7 +8,7 @@ import logging
 import os
 import sys
 
-from signal import signal, SIGTERM, SIGINT
+#from signal import signal, SIGTERM, SIGINT
 
 class SocketServer(Daemon):
 
@@ -18,14 +18,13 @@ class SocketServer(Daemon):
 
         logging.basicConfig(format=format, level=level)
 
-    def __init__(self, name, port, mapper, http_port=None):
+    def __init__(self, name, config, mapper):
 
-        self.port = port
         self.mapper = mapper
-        self.http_port = http_port
+        self.http_port = config.getint('sockets', 'http_port')
 
-        Talker.port = self.port
-        self.talker = Talker()
+        Talker.port = config.getint('sockets', 'socket_port')
+        self.talker = Talker(config)
 
         def named(s):
             return s % name

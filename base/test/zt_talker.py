@@ -1,9 +1,10 @@
 # coding: utf8
 
-from sender import Sender
-from talker import Talker
-from test.test_case import TestCase
+from base.sender import Sender
+from base.talker import Talker
+from base.test.test_case import TestCase
 import time
+from ConfigParser import ConfigParser
 
 class Zt_Talker_Base(TestCase):
 
@@ -12,11 +13,17 @@ class Zt_Talker_Base(TestCase):
         time.sleep(Talker.epoll_timeout)
 
 
+def get_config():
+    config = ConfigParser()
+    config.read('test_config.cfg')
+    return config
+
+
 class Zt_Talker_Threading(Zt_Talker_Base):
 
     def setUp(self):
         Talker.epoll_timeout = 0.1
-        self.talker = Talker()
+        self.talker = Talker(get_config())
         self.talker.start()
         self.sender = Sender('', self.talker.port)
 
@@ -32,7 +39,7 @@ class Zt_Talker_Threading(Zt_Talker_Base):
 class Zt_Talker(Zt_Talker_Base):
 
     def setUp(self):
-        self.talker = Talker()
+        self.talker = Talker(get_config())
         self.talker.start()
         time.sleep(1)
         self.sender = Sender('', 8885).connect()
@@ -43,4 +50,3 @@ class Zt_Talker(Zt_Talker_Base):
     def test_command(self):
         self.sender.send(self.data)
         self.assertEqual(self.sender.parse()['result'], 1)
-

@@ -1,4 +1,5 @@
 # coding: utf8
+from ConfigParser import ConfigParser
 from base.clients_map import ClientsMap
 from base.common import trace
 from common import Common
@@ -14,19 +15,24 @@ class BaseHandler(Common, Thread):
     epoll_timeout = 2
     address = ''
 
-    def __init__(self):
+
+    def __init__(self, config):
         Thread.__init__(self)
 
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.socket.bind((self.address, self.port))
-        self.socket.listen(1)
-        self.socket.setblocking(0)
+        self.socket = self.create_socket()
 
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
 
-        self.clients = ClientsMap(self)
+        self.clients = ClientsMap(self, config)
+
+    def create_socket(self):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        sock.bind((self.address, self.port))
+        sock.listen(1)
+        sock.setblocking(0)
+        return sock
 
     def epoll_register(self, socket, type=select.EPOLLIN):
         self.epoll.register(socket.fileno(), type)

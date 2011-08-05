@@ -55,8 +55,11 @@ class Client(Common, Packer):
         return len(self.response) > 0
 
     def refresh_state(self):
-        type = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
-        self.poll.modify(self.fileno, type)
+        try:
+            type = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
+            self.poll.modify(self.fileno, type)
+        except:
+            trace()
 
     def login(self, uid):
         self.uid = uid

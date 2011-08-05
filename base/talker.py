@@ -29,13 +29,6 @@ class Talker(BaseHandler, Packer):
             trace()
             self.unregister(sock.fileno())
 
-
-#    def login(self, client):
-#        exist_client = self.clients.users.get(client.uid)
-#        if exist_client:
-#            self.unregister(exist_client.fileno)
-#        self.clients.add_user(client)
-
     def process(self, client, event):
         logging.debug('talker clients %s' % len(self.clients))
 
@@ -48,10 +41,12 @@ class Talker(BaseHandler, Packer):
                     client.logger.error('Decode Error %s' % s)
                 else:
                     client.listen(data)
-#                    if client.logged:
-#                        self.login(client)
 
         elif event & select.EPOLLOUT:
             if client.has_reponse:
                 client.reply()
 
+
+    def close(self):
+        BaseHandler.close(self)
+        self.clients.subcriber.stop()
