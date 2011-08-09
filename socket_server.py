@@ -8,8 +8,6 @@ import logging
 import os
 import sys
 
-from signal import signal, SIGTERM, SIGINT
-
 class SocketServer(Daemon):
 
     def init_logging(self):
@@ -40,9 +38,6 @@ class SocketServer(Daemon):
     def run(self):
         self.init_logging()
         Common.mapper = self.mapper
-
-        for sig in (SIGTERM, SIGINT):
-            signal(sig, lambda signum, stack_frame: self.close(1))
 
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
