@@ -2,9 +2,13 @@
 
 from redis import Redis
 from threading import Thread
+from random import random
 
 def ismsg(d):
     return d['type'] == 'message'
+
+def isdie(d):
+    return d['data'] == 'die'
 
 class Subsciber(Thread):
 
@@ -14,22 +18,30 @@ class Subsciber(Thread):
         self.redis = Redis()
         self.clients = clients_map
         self.channel = channel
-        self.listener = self.redis.listen()
+
+        self.closemsg = 'close_%s' % random()
+
+    def isclose(self, d):
+        return d['data'] == self.closemsg
 
     def run(self):
         self.redis.subscribe(self.channel)
 
-        for d in self.listener:
+        for d in self.redis.listen():
             print d
             if ismsg(d):
-                msg = eval(d['data'])
-                uids = msg.pop('uids')
-                self.clients.response(uids, msg)
+
+                if self.isclose(d):
+                    break
+                else:
+                    msg = eval(d['data'])
+                    uids = msg.pop('uids')
+                    self.clients.response(uids, msg)
 
         return self
 
     def stop(self):
-        self.listener.close()
+        self.redis.publish(self.channel, self.closemsg)
 
 
 class ClientsMap(object):
