@@ -19,11 +19,17 @@ class Sender(Packer):
     def send(self, data):
         self.socket.send(self.encode(data))
 
-    def recv(self, size=1024):
-        return self.socket.recv(size)
+    def recv(self):
+        size_data = None
+        while not size_data:
+            size_data = self.socket.recv(4)
+
+        size = self.packsize(size_data)
+
+        return size, self.socket.recv(size)
 
     def parse(self):
-        return self.decode(self.recv())
+        return self.decode(*self.recv())
 
     def close(self):
         try:

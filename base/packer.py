@@ -23,12 +23,13 @@ class Packer():
         if size:
             return data[:size]
 
-    def decode(self, data):
-        if len(data) <= 4:
-            raise PackerDecodeError('lenght <= 4')
-
-        size = self.packsize(data[:self.SBIN_SIZE])
-        data = self.unpack(size, data[self.SBIN_SIZE:])
+    def decode(self, size, data):
+#        print data
+#        if len(data) <= 4:
+#            raise PackerDecodeError('lenght data less sbin size')
+#
+#        size = self.packsize(data[:self.SBIN_SIZE])
+        data = self.unpack(size, data)
 
         if not size:
             raise PackerDecodeError('size not found')

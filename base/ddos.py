@@ -1,10 +1,7 @@
 # coding: utf8
 
-from logging import FileHandler
 from sender import Sender
 from threading import Thread
-import logging
-import os
 import signal
 import time
 
@@ -18,20 +15,14 @@ def timer(diff=None):
 
 class Client(Thread):
 
-    logging_frm = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    logging_level = logging.DEBUG
-    logging.basicConfig(format=logging_frm, level=logging_level)
-    logger = logging.getLogger()
-    e = FileHandler(os.path.abspath('ddos.log'), 'w')
-    e.level = logging.DEBUG
-    logger.addHandler(e)
-
-    delay = 1
+    delay = 0
     working = False
 
     param = {"command": "user.authorization",
              "uid": "6104128459101111038",
-             "auth_key": "599bf8e08afc3003d0db1a7f048eee49"}
+             "auth_key": "599bf8e08afc3003d0db1a7f048eee49",
+             "get_data":1}
+
     expected = {'command':'ok'}
 
     timings = []
@@ -42,22 +33,15 @@ class Client(Thread):
     def connect(self):
         if self.working:
             Client.count += 1
-            return Sender('', 8885).connect()
+            return Sender('dev02.rabochee.com', 8885).connect()
 
     def do_command(self, sender):
         time = timer()
+        sender = self.connect()
 
-        try:
-            sender.send(self.param)
-            resp = sender.parse()
-        except Exception, s:
-            Client.error += 1
-            self.logger.error(s)
-
-
-#        if resp != self.expected:
-#            Client.working = False
-
+        sender.send(self.param)
+        resp = sender.parse()
+        sender.close()
 
         Client.messages += 1
         return timer(time)
@@ -70,6 +54,7 @@ class Client(Thread):
             time.sleep(self.delay)
         else:
             sender.close()
+
 
 
 if __name__ == '__main__':
@@ -93,7 +78,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, quit)
     Client.working = True
 
-    for i in range(3000):
+    for i in xrange(4):
         t = Client()
         t.setDaemon(True)
         t.start()
