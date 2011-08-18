@@ -28,7 +28,6 @@ class Subsciber(Thread):
         self.redis.subscribe(self.channel)
 
         for d in self.redis.listen():
-            print d
             if ismsg(d):
 
                 if self.isclose(d):

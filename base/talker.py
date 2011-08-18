@@ -14,29 +14,20 @@ class Talker(BaseHandler, Packer):
     port = 8885
 
     def register(self, sock, addr, type=select.POLLIN):
-        self.clients[sock.fileno()] = Client(sock, addr, self.epoll)
+        self.clients[sock.fileno()] = Client(sock, addr, self)
+
         self.epoll_register(sock, type)
         logging.debug('register client %s' % len(self.clients))
-
-    def recv(self, sock, size):
-        try:
-            data = sock.recv(size)
-            if not data:
-                self.unregister(sock.fileno())
-            else:
-                return data
-        except Exception, s:
-            trace()
-            self.unregister(sock.fileno())
 
     def process(self, client, event):
         logging.debug('talker clients %s' % len(self.clients))
 
         if event & select.EPOLLIN:
-            data = self.recv(client.sock, 1024)
+            data = client.recv()
             if data:
                 try:
                     data = self.decode(data)
+                    print data
                 except PackerDecodeError, s:
                     client.logger.error('Decode Error %s' % s)
                 else:

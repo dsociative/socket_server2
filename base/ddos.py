@@ -33,12 +33,11 @@ class Client(Thread):
     def connect(self):
         if self.working:
             Client.count += 1
-            return Sender('dev02.rabochee.com', 8885).connect()
+            return Sender('', 8885).connect()
 
     def do_command(self, sender):
         time = timer()
         sender = self.connect()
-
         sender.send(self.param)
         resp = sender.parse()
         sender.close()
@@ -60,6 +59,7 @@ class Client(Thread):
 if __name__ == '__main__':
 
     start_time = timer()
+    workers = 1
 
     def quit(q, w):
         Client.working = False
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, quit)
     Client.working = True
 
-    for i in xrange(4):
+    for i in xrange(workers):
         t = Client()
         t.setDaemon(True)
         t.start()

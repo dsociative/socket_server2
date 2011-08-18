@@ -1,5 +1,5 @@
 # coding: utf8
-from ConfigParser import ConfigParser
+
 from base.clients_map import ClientsMap
 from base.common import trace
 from common import Common
@@ -20,6 +20,7 @@ class BaseHandler(Common, Thread):
         Thread.__init__(self)
 
         self.socket = self.create_socket()
+        self.fileno = self.socket.fileno()
 
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
@@ -70,8 +71,8 @@ class BaseHandler(Common, Thread):
         while not self.epoll.closed:
             events = self.epoll.poll(self.epoll_timeout)
             for no, event in events:
-                if no == self.socket.fileno():
-                    sock = self.accept()
+                if no == self.fileno:
+                    self.accept()
                 else:
                     self.process(self.get(no), event)
 

@@ -17,7 +17,7 @@ class Sender(Packer):
         return self
 
     def send(self, data):
-        self.socket.send(self.encode(data))
+        self.socket.send(self.encode(data)[:-1])
 
     def recv(self):
         size_data = None
@@ -29,7 +29,7 @@ class Sender(Packer):
         return size, self.socket.recv(size)
 
     def parse(self):
-        return self.decode(*self.recv())
+        return self.unpack(*self.recv())
 
     def close(self):
         try:

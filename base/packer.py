@@ -18,18 +18,10 @@ class Packer():
     def packsize(self, sbinary):
         if sbinary and len(sbinary) == self.SBIN_SIZE:
             return struct.unpack('!I', sbinary)[0]
+        else:
+            raise PackerDecodeError('Error size')
 
     def unpack(self, size, data):
-        if size:
-            return data[:size]
-
-    def decode(self, size, data):
-#        print data
-#        if len(data) <= 4:
-#            raise PackerDecodeError('lenght data less sbin size')
-#
-#        size = self.packsize(data[:self.SBIN_SIZE])
-        data = self.unpack(size, data)
 
         if not size:
             raise PackerDecodeError('size not found')
@@ -37,6 +29,17 @@ class Packer():
             raise PackerDecodeError('size:%s != data length:%s' % (size, len(data)))
 
         return pyamf.decode(data).readElement()
+
+    def split(self, data):
+        return data[:self.SBIN_SIZE], data[self.SBIN_SIZE:]
+
+    def decode(self, data):
+        if len(data) <= 4:
+            raise PackerDecodeError('lenght <= 4')
+
+        sbin, data = self.split(data)
+        return self.unpack(self.packsize(sbin), data)
+
 
     def encode(self, params):
         data = pyamf.encode(params)

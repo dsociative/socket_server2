@@ -7,9 +7,12 @@ import select
 
 class Client(Common, Packer):
 
-    def __init__(self, sock, addr, poll, uid=None):
+    def __init__(self, sock, addr, talker, uid=None):
         self.sock = sock
-        self.poll = poll
+
+        self.talker = talker
+        self.poll = talker.epoll
+
         self.uid = uid
         self.fileno = sock.fileno()
         self.response = []
@@ -22,17 +25,33 @@ class Client(Common, Packer):
 
     def execute_cmd(self, params, cmd):
         try:
-
             resp = cmd(self)(params)
             return self.add_resp(resp)
         except:
             trace()
             return None
 
+    def recv(self):
+
+        try:
+            data = self.sock.recv(1024)
+            if not data:
+                self.unregister()
+            else:
+                return data
+
+        except Exception, _:
+            trace()
+            self.unregister()
+
+
     def listen(self, params):
+
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)
+
         self.logger.info('command %s recieved' % name)
+
         if cmd:
             self.execute_cmd(params, cmd)
         else:
@@ -46,6 +65,9 @@ class Client(Common, Packer):
         resp = self.response.pop()
         self.sock.send(self.encode(resp))
         self.refresh_state()
+
+    def unregister(self):
+        self.talker.unregister(self.fileno)
 
     def close(self):
         return self.sock.close()
