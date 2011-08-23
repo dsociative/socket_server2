@@ -38,7 +38,7 @@ class Client(Common, Packer):
             if not data:
                 self.unregister()
             else:
-                return data
+                return self.listen(self.decode(data))
 
         except Exception, _:
             trace()

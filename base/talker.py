@@ -1,7 +1,5 @@
 # coding: utf8
 
-from base.common import trace
-from base.packer import PackerDecodeError
 from client import Client
 from handler import BaseHandler
 from packer import Packer
@@ -23,19 +21,9 @@ class Talker(BaseHandler, Packer):
         logging.debug('talker clients %s' % len(self.clients))
 
         if event & select.EPOLLIN:
-            data = client.recv()
-            if data:
-                try:
-                    data = self.decode(data)
-                    print data
-                except PackerDecodeError, s:
-                    client.logger.error('Decode Error %s' % s)
-                else:
-                    client.listen(data)
-
+            client.recv()
         elif event & select.EPOLLOUT:
-            if client.has_reponse:
-                client.reply()
+            client.reply()
 
 
     def close(self):
