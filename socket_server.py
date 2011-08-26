@@ -46,4 +46,5 @@ class SocketServer(Thread):
             self.http_socket.stop()
         self.talker.close()
         print 'socket is closed'
+        sys.exit(0)
 
