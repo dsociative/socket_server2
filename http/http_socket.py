@@ -6,7 +6,9 @@ from tornado.web import url, RequestHandler, asynchronous
 import json
 import logging
 import thread
-import tornado.web
+import tornado.web\
+
+from threading import Thread
 
 
 CROSSDOMAIN = """<?xml version="1.0"?>
@@ -76,16 +78,18 @@ app = tornado.web.Application([
     ])
 
 
-class HttpSocket():
+class HttpSocket(Thread):
 
     def __init__(self, mapper, port=8888):
+        Thread.__init__(self)
 
         Request.mapper = mapper
+        self.server = HTTPServer(app)
 
-        server = HTTPServer(app)
-        server.bind(port)
-        server.start(1)
-        self.thread = thread.start_new_thread(self.ioloop.start, ())
+    def run(self):
+        self.server.bind(port)
+        self.server.start(1)
+        self.ioloop.start()
 
     def stop(self):
         self.ioloop.stop()
