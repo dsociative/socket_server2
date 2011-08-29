@@ -77,7 +77,7 @@ class BaseHandler(Common, Thread):
                     self.process(self.get(no), event)
 
 
-    def close(self):
+    def stop(self):
         self.epoll.close()
         self.socket.close()
 

@@ -41,10 +41,10 @@ class SocketServer(Thread):
     def run(self):
         self.talker.run()
 
-    def close(self, *q):
+    def stop(self, *q):
         if self.http_port:
             self.http_socket.stop()
-        self.talker.close()
+        self.talker.stop()
         print 'socket is closed'
         sys.exit(0)
 

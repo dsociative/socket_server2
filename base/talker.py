@@ -26,6 +26,6 @@ class Talker(BaseHandler, Packer):
             client.reply()
 
 
-    def close(self):
-        BaseHandler.close(self)
+    def stop(self):
+        BaseHandler.stop(self)
         self.clients.subcriber.stop()
