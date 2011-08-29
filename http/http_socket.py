@@ -52,6 +52,7 @@ class HttpSocketHandler(Request):
     def authorization(self):
         return self.mapper.auth(self.client)
 
+    @asynchronous
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
