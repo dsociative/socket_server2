@@ -18,11 +18,6 @@ class Client(Common, Packer):
         self.response = []
         self.peername = addr
 
-    @property
-    def logger(self):
-        return logging.getLogger('Client %s - %s' % (self.peername, self.uid))
-
-
     def execute_cmd(self, params, cmd):
         try:
             resp = cmd(self)(params)
@@ -50,12 +45,9 @@ class Client(Common, Packer):
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)
 
-        self.logger.info('command %s recieved' % name)
 
         if cmd:
             self.execute_cmd(params, cmd)
-        else:
-            self.logger.warning('%s command not found' % name)
 
     def add_resp(self, resp):
         self.response.insert(0, resp)
