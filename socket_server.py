@@ -36,6 +36,7 @@ class SocketServer(Thread):
 
         if self.http_port:
             self.http_socket = HttpSocket(self.mapper, self.http_port)
+            self.http_socket.start()
 
 
     def run(self):

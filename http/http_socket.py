@@ -85,10 +85,11 @@ class HttpSocket(Thread):
         Thread.__init__(self)
 
         Request.mapper = mapper
+        self.port = port
         self.server = HTTPServer(app)
 
     def run(self):
-        self.server.bind(port)
+        self.server.bind(self.port)
         self.server.start(1)
         self.ioloop.start()
 
