@@ -1,8 +1,7 @@
 # coding:
-from base.common import trace
+from base.common import trace, command_error
 from common import Common
 from packer import Packer
-import logging
 import select
 
 class Client(Common, Packer):
@@ -23,8 +22,7 @@ class Client(Common, Packer):
             resp = cmd(self)(params)
             return self.add_resp(resp)
         except:
-            logging.error(params)
-            trace()
+            command_error(self, params)
             return None
 
     def recv(self):

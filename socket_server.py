@@ -1,21 +1,14 @@
 # coding: utf8
-from base.common import Common
+from base.common import Common, init_logging
 from base.talker import Talker
 from http.http_socket import HttpSocket
-import logging
+from threading import Thread
 import os
 import sys
 
-from threading import Thread
 
 
 class SocketServer(Thread):
-
-    def init_logging(self):
-        format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-        level = logging.DEBUG
-
-        logging.basicConfig(format=format, level=level)
 
     def __init__(self, name, config, mapper):
         Thread.__init__(self)
@@ -31,7 +24,8 @@ class SocketServer(Thread):
 
         def named_path(s):
             return os.path.abspath(named(s))
-        self.init_logging()
+
+        init_logging()
         Common.mapper = self.mapper
 
         if self.http_port:

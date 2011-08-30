@@ -1,14 +1,13 @@
 # coding: utf8
+from base.client import Client
+from base.common import command_error, init_logging
+from threading import Thread
 from tornado.escape import json_encode
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 from tornado.web import url, RequestHandler, asynchronous
 import json
-import logging
-import thread
-import tornado.web\
-
-from threading import Thread
+import tornado.web
 
 
 CROSSDOMAIN = """<?xml version="1.0"?>
@@ -52,13 +51,21 @@ class HttpSocketHandler(Request):
     def authorization(self):
         return self.mapper.auth(self.client)
 
+    def execute_cmd(self, cmd, params):
+        try:
+            msg = cmd(params)
+            return msg
+        except:
+            command_error(self.client, params)
+
+
     @asynchronous
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
 
-        msg = self.authorization(params)
-        if msg.result != 1 or params['command'] == self.authorization.name:
+        msg = self.execute_cmd(self.authorization, params)
+        if msg and msg.result != 1 or msg and params['command'] == self.authorization.name:
             return self.response(msg)
 
         command = self.mapper.get(command_id, self.client.uid)
@@ -68,7 +75,9 @@ class HttpSocketHandler(Request):
             return self.finish()
 
         command = command(self.client)
-        self.response(command(params))
+        msg = self.execute_cmd(command, params)
+        if msg:
+            self.response(msg)
 
     post = get
 
@@ -83,12 +92,14 @@ class HttpSocket(Thread):
 
     def __init__(self, mapper, port=8888):
         Thread.__init__(self)
+        init_logging()
 
         Request.mapper = mapper
         self.port = port
         self.server = HTTPServer(app)
 
     def run(self):
+
         self.server.bind(self.port)
         self.server.start(1)
         self.ioloop.start()
