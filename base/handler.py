@@ -31,7 +31,7 @@ class BaseHandler(Common, Thread):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         sock.bind((self.address, self.port))
-        sock.listen(1)
+        sock.listen(2)
         sock.setblocking(0)
         return sock
 

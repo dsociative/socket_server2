@@ -23,6 +23,7 @@ class Client(Common, Packer):
             resp = cmd(self)(params)
             return self.add_resp(resp)
         except:
+            logging.error(params)
             trace()
             return None
 
