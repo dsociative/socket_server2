@@ -15,19 +15,17 @@ class Subsciber(Thread):
     def __init__(self, clients_map, channel='messaging'):
         Thread.__init__(self)
 
-        self.redis = Redis(host=clients_map.host, port=clients_map.port,
-                           db=clients_map.db)
         self.clients = clients_map
         self.channel = channel
 
+        self.pubsub = clients_map.redis.pubsub()
         self.closemsg = 'close_%s' % random()
 
     def isclose(self, d):
         return d['data'] == self.closemsg
 
     def run(self):
-        self.pubsub = self.redis.pubsub()
-        self.pubsub.subscribe(self.channel)
+        self.pubsub.psubscribe(self.channel)
 
         for d in self.pubsub.listen():
             if ismsg(d):
@@ -42,7 +40,7 @@ class Subsciber(Thread):
         return self
 
     def stop(self):
-        self.redis.publish(self.channel, self.closemsg)
+        self.clients.redis.publish(self.channel, self.closemsg)
 
 
 class ClientsMap(object):
