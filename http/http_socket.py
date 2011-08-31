@@ -81,22 +81,26 @@ class HttpSocketHandler(Request):
 
     post = get
 
-
-app = tornado.web.Application([
+default_urls = [
     url(r'/', HttpSocketHandler),
     url(r'/crossdomain.xml', CrossDomainHandler),
-    ])
+    ]
+
+app = tornado.web.Application()
 
 
 class HttpSocket(Thread):
 
-    def __init__(self, mapper, port=8888):
+    def __init__(self, mapper, port=8888, urls={}):
         Thread.__init__(self)
         init_logging()
 
+        for url_path, request_cls in urls.iteritems():
+            default_urls.append(url(url_path, request_cls))
+
         Request.mapper = mapper
         self.port = port
-        self.server = HTTPServer(app)
+        self.server = HTTPServer(tornado.web.Application(default_urls))
 
     def run(self):
 
