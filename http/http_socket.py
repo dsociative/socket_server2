@@ -1,5 +1,4 @@
 # coding: utf8
-from base.client import Client
 from base.common import command_error, init_logging
 from threading import Thread
 from tornado.escape import json_encode
@@ -91,7 +90,7 @@ app = tornado.web.Application()
 
 class HttpSocket(Thread):
 
-    def __init__(self, mapper, port=8888, urls={}):
+    def __init__(self, mapper, port=8888, urls={}, localhost=False):
         Thread.__init__(self)
         init_logging()
 
@@ -100,12 +99,19 @@ class HttpSocket(Thread):
 
         Request.mapper = mapper
         self.port = port
-        self.server = HTTPServer(tornado.web.Application(default_urls))
+        self.app = tornado.web.Application(default_urls)
+        self.localhost = False
 
     def run(self):
 
-        self.server.bind(self.port)
-        self.server.start(1)
+        if not self.localhost:
+            server = HTTPServer(self.app)
+
+            server.bind(self.port)
+            server.start(1)
+        else:
+            self.app.listen(self.port)
+
         self.ioloop.start()
 
     def stop(self):
