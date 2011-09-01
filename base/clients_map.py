@@ -5,7 +5,7 @@ from threading import Thread
 from random import random
 
 def ismsg(d):
-    return d['type'] == 'message'
+    return d['type'] == 'pmessage'
 
 def isdie(d):
     return d['data'] == 'die'
@@ -28,6 +28,7 @@ class Subsciber(Thread):
         self.pubsub.psubscribe(self.channel)
 
         for d in self.pubsub.listen():
+            print d
             if ismsg(d):
 
                 if self.isclose(d):
