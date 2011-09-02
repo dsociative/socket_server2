@@ -7,6 +7,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import url, RequestHandler, asynchronous
 import json
 import tornado.web
+import logging
 
 
 CROSSDOMAIN = """<?xml version="1.0"?>
