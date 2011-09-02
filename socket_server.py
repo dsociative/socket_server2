@@ -10,7 +10,7 @@ import sys
 
 class SocketServer(Thread):
 
-    def __init__(self, name, config, mapper):
+    def __init__(self, name, config, mapper, urls={}):
         Thread.__init__(self)
 
         self.mapper = mapper
@@ -29,7 +29,7 @@ class SocketServer(Thread):
         Common.mapper = self.mapper
 
         if self.http_port:
-            self.http_socket = HttpSocket(self.mapper, self.http_port)
+            self.http_socket = HttpSocket(self.mapper, self.http_port, ulrs=urls)
             self.http_socket.start()
 
 
