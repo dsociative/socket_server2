@@ -29,7 +29,7 @@ class SocketServer(Thread):
         Common.mapper = self.mapper
 
         if self.http_port:
-            self.http_socket = HttpSocket(self.mapper, self.http_port, ulrs=urls)
+            self.http_socket = HttpSocket(self.mapper, self.http_port, urls=urls)
             self.http_socket.start()
 
 
