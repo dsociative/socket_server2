@@ -104,9 +104,9 @@ class HttpSocket(Thread):
 
     def run(self):
 
-        server = HTTPServer(self.app, self.host)
+        server = HTTPServer(self.app)
 
-        server.bind(self.port)
+        server.bind(self.port, self.host)
         server.start(1)
 
         self.ioloop.start()
