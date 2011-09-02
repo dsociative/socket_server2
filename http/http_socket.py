@@ -100,7 +100,7 @@ class HttpSocket(Thread):
         Request.mapper = mapper
         self.port = port
         self.app = tornado.web.Application(default_urls)
-        self.localhost = False
+        self.localhost = localhost
 
     def run(self):
 
