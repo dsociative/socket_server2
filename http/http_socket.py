@@ -90,7 +90,7 @@ app = tornado.web.Application()
 
 class HttpSocket(Thread):
 
-    def __init__(self, mapper, port=8888, urls={}, localhost=False):
+    def __init__(self, mapper, port=8888, urls={}, host=''):
         Thread.__init__(self)
         init_logging()
 
@@ -100,17 +100,14 @@ class HttpSocket(Thread):
         Request.mapper = mapper
         self.port = port
         self.app = tornado.web.Application(default_urls)
-        self.localhost = localhost
+        self.host = host
 
     def run(self):
 
-        if not self.localhost:
-            server = HTTPServer(self.app)
+        server = HTTPServer(self.app, self.host)
 
-            server.bind(self.port)
-            server.start(1)
-        else:
-            self.app.listen(self.port)
+        server.bind(self.port)
+        server.start(1)
 
         self.ioloop.start()
 
