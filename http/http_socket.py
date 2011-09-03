@@ -15,12 +15,9 @@ CROSSDOMAIN = """<?xml version="1.0"?>
   <allow-access-from domain="*" />
 </cross-domain-policy>"""
 
-class Request(RequestHandler):
+store = None
 
-    mapper = None
-    client = None
-
-class CrossDomainHandler(Request):
+class CrossDomainHandler(RequestHandler):
 
     def get(self):
         self.finish(CROSSDOMAIN)
@@ -39,10 +36,11 @@ class WebClient(object):
     def __init__(self):
         self.uid = None
 
-class HttpSocketHandler(Request):
+class HttpSocketHandler(RequestHandler):
 
     def initialize(self):
         self.client = WebClient()
+        self.mapper = self.application.mapper
 
     def response(self, msg):
         self.finish(json_encode(msg.to_dict()))
@@ -98,9 +96,9 @@ class HttpSocket(Thread):
         for url_path, request_cls in urls.iteritems():
             default_urls.append(url(url_path, request_cls))
 
-        Request.mapper = mapper
         self.port = port
         self.app = tornado.web.Application(default_urls)
+        self.app.mapper = mapper
         self.host = host
 
     def run(self):
