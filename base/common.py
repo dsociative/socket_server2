@@ -5,9 +5,9 @@ import traceback
 import logging
 
 
-def init_logging():
+def init_logging(level='DEBUG'):
     format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    level = logging.DEBUG
+    level = logging.WARNING
 
     logging.basicConfig(format=format, level=level)
 

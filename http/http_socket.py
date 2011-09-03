@@ -1,5 +1,5 @@
 # coding: utf8
-from base.common import command_error, init_logging
+from base.common import command_error
 from threading import Thread
 from tornado.escape import json_encode
 from tornado.httpserver import HTTPServer
@@ -91,7 +91,6 @@ class HttpSocket(Thread):
 
     def __init__(self, mapper, port=8888, urls={}, host=''):
         Thread.__init__(self)
-        init_logging()
 
         for url_path, request_cls in urls.iteritems():
             default_urls.append(url(url_path, request_cls))

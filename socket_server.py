@@ -1,5 +1,5 @@
 # coding: utf8
-from base.common import Common, init_logging
+from base.common import Common
 from base.talker import Talker
 from http.http_socket import HttpSocket
 from threading import Thread
@@ -25,7 +25,6 @@ class SocketServer(Thread):
         def named_path(s):
             return os.path.abspath(named(s))
 
-        init_logging()
         Common.mapper = self.mapper
 
         if self.http_port:
