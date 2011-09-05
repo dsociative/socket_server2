@@ -28,7 +28,6 @@ class Subsciber(Thread):
         self.pubsub.psubscribe(self.channel)
 
         for d in self.pubsub.listen():
-            print d
             if ismsg(d):
 
                 if self.isclose(d):
