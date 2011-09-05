@@ -41,6 +41,7 @@ class Client(Common, Packer):
                     self.buffer += data
                     if len(self.buffer) >= self.size:
                         self.listen(self.unpack(self.size, self.buffer[:self.size]))
+                        self.buffer = b''
                         self.size = None
 
         except Exception, _:
