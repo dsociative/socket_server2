@@ -17,6 +17,9 @@ class Client(Common, Packer):
         self.response = []
         self.peername = addr
 
+        self.buffer = b''
+        self.size = None
+
     def execute_cmd(self, params, cmd):
         try:
             resp = cmd(self)(params)
@@ -28,11 +31,17 @@ class Client(Common, Packer):
     def recv(self):
 
         try:
-            data = self.sock.recv(1024)
+            data = self.sock.recv(self.size or 4)
             if not data:
                 self.unregister()
             else:
-                return self.listen(self.decode(data))
+                if not self.size:
+                    self.size = self.packsize(data)
+                else:
+                    self.buffer += data
+                    if len(self.buffer) >= self.size:
+                        self.listen(self.unpack(self.size, self.buffer[:self.size]))
+                        self.size = None
 
         except Exception, _:
             trace()
