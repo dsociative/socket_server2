@@ -44,6 +44,8 @@ class Client(Common, Packer):
                         self.buffer = b''
                         self.size = None
 
+        except socket.error, e:
+            print e
         except Exception, _:
             trace()
             self.unregister()
