@@ -3,6 +3,7 @@ from base.common import trace, command_error
 from common import Common
 from packer import Packer
 import select
+import socket
 
 class Client(Common, Packer):
 
