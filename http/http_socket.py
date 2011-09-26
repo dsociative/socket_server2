@@ -57,14 +57,21 @@ class HttpSocketHandler(RequestHandler):
             command_error(self.client, params)
 
 
+
+    def arguments(self):
+        rt = {}
+        for key, values_tuple in self.request.arguments.iteritems():
+            rt[key] = values_tuple[0]
+        return rt
+
+
     @asynchronous
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
 
-        msg = self.execute_cmd(self.authorization, params)
-        if msg and msg.result != 1 or msg and params['command'] == self.authorization.name:
-            return self.response(msg)
+        if not self.auth_func(self.client, self.arguments()):
+            return self.response({'result':0, 'result_text':'auth failed'})
 
         command = self.mapper.get(command_id, self.client.uid)
 
@@ -89,8 +96,9 @@ app = tornado.web.Application()
 
 class HttpSocket(Thread):
 
-    def __init__(self, mapper, port=8888, urls={}, host=''):
+    def __init__(self, mapper, auth_func, port=8888, urls={}, host=''):
         Thread.__init__(self)
+        RequestHandler.auth_func = auth_func
 
         for url_path, request_cls in urls.iteritems():
             default_urls.append(url(url_path, request_cls))
