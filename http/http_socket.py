@@ -41,6 +41,7 @@ class HttpSocketHandler(RequestHandler):
     def initialize(self):
         self.client = WebClient()
         self.mapper = self.application.mapper
+        self.auth_func = self.application.auth_func
 
     def response(self, msg):
         self.finish(json_encode(msg.to_dict()))
@@ -95,7 +96,6 @@ class HttpSocket(Thread):
 
     def __init__(self, mapper, auth_func, port=8888, urls={}, host=''):
         Thread.__init__(self)
-        RequestHandler.auth_func = auth_func
 
         for url_path, request_cls in urls.iteritems():
             default_urls.append(url(url_path, request_cls))
@@ -103,6 +103,7 @@ class HttpSocket(Thread):
         self.port = port
         self.app = tornado.web.Application(default_urls)
         self.app.mapper = mapper
+        self.app.auth_func = auth_func
         self.host = host
 
     def run(self):
