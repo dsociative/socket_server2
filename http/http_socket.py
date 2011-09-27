@@ -56,13 +56,19 @@ class HttpSocketHandler(RequestHandler):
         except:
             command_error(self.client, params)
 
+
+    def isauth_cmd(self, params, command_id):
+        return command_id == self.authorization.name
+
+
     @asynchronous
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
 
-        if not self.auth_func(self.client, params):
-            return self.response({'result':0, 'result_text':'auth failed'})
+        if not self.isauth_cmd(params, command_id):
+            if not self.auth_func(self.client, params):
+                return self.response({'result':0, 'result_text':'auth failed'})
 
         command = self.mapper.get(command_id, self.client.uid)
 
