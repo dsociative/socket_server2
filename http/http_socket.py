@@ -56,21 +56,12 @@ class HttpSocketHandler(RequestHandler):
         except:
             command_error(self.client, params)
 
-
-
-    def arguments(self):
-        rt = {}
-        for key, values_tuple in self.request.arguments.iteritems():
-            rt[key] = values_tuple[0]
-        return rt
-
-
     @asynchronous
     def get(self):
         params = json.loads(self.get_argument('params'))
         command_id = params.get('command')
 
-        if not self.auth_func(self.client, self.arguments()):
+        if not self.auth_func(self.client, params):
             return self.response({'result':0, 'result_text':'auth failed'})
 
         command = self.mapper.get(command_id, self.client.uid)
