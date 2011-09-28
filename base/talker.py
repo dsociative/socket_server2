@@ -18,8 +18,6 @@ class Talker(BaseHandler, Packer):
         logging.debug('register client %s' % len(self.clients))
 
     def process(self, client, event):
-        logging.debug('talker clients %s' % len(self.clients))
-
         if event & select.EPOLLIN:
             client.recv()
         elif event & select.EPOLLOUT:

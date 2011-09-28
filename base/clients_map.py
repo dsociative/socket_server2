@@ -64,11 +64,10 @@ class ClientsMap(object):
         self.clients[fileno] = client
 
     def __getitem__(self, fileno):
-        return self.clients.get(fileno)
+        return self.get(fileno)
 
     def get(self, fileno):
-        return self[fileno]
-
+        return self.clients.get(fileno)
 
     def __delitem__(self, fileno):
         client = self.clients[fileno]

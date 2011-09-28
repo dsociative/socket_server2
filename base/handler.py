@@ -45,21 +45,20 @@ class BaseHandler(Common, Thread):
         logging.debug('register client %s' % len(self.clients))
 
     def modify(self, sock, type):
-        self.epoll.modify(sock.fileno(), type)
+        try:
+            self.epoll.modify(sock.fileno(), type)
+        except:
+            trace()
 
     def unregister(self, filleno):
-        self.epoll.unregister(filleno)
         sock = self.clients.get(filleno)
         if sock:
             try:
+                self.epoll.unregister(filleno)
                 sock.close()
             except:
                 trace()
             del self.clients[filleno]
-
-    def get(self, no):
-        return self.clients.get(no)
-
 
     def accept(self):
         sock, address = self.socket.accept()
@@ -74,7 +73,9 @@ class BaseHandler(Common, Thread):
                 if no == self.fileno:
                     self.accept()
                 else:
-                    self.process(self.get(no), event)
+                    client = self.clients.get(no)
+                    if client:
+                        self.process(client, event)
 
 
     def stop(self):
