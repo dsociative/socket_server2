@@ -67,7 +67,10 @@ class Client(Common, Packer):
 
     def reply(self):
         resp = self.response.pop()
-        self.sock.send(self.encode(resp))
+        try:
+            self.sock.send(self.encode(resp))
+        except socket.error, _:
+            trace()
         self.refresh_state()
 
     def unregister(self):
