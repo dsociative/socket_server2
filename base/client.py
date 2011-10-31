@@ -69,16 +69,15 @@ class Client(Common, Packer):
     def reply(self):
         if not self.resp_buffer:
             self.resp_buffer = self.encode(self.response.pop())
-		
-		try:
-		    writen = self.sock.send(self.resp_buffer)
-		    self.resp_buffer = self.resp_buffer[writen:]
+        try:
+            writen = self.sock.send(self.resp_buffer)
+            self.resp_buffer = self.resp_buffer[writen:]
         except socket.error, _:
             trace()
-		finally:
-		    if not self.resp_buffer:
-		        self.resp_buffer = b''
-		        self.refresh_state()
+        finally:
+            if not self.resp_buffer:
+                self.resp_buffer = b''
+                self.refresh_state()
 
     def unregister(self):
         self.talker.unregister(self.fileno)
@@ -92,8 +91,8 @@ class Client(Common, Packer):
 
     def refresh_state(self):
         try:
-            type = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
-            self.poll.modify(self.fileno, type)
+            etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
+            self.poll.modify(self.fileno, etype)
         except:
             trace()
 
