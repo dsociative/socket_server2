@@ -62,6 +62,7 @@ class BaseHandler(Common, Thread):
 
     def accept(self):
         sock, address = self.socket.accept()
+        sock.setblocking(0)
         return self.register(sock, address)
 
     def run(self):

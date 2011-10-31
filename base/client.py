@@ -19,6 +19,7 @@ class Client(Common, Packer):
         self.peername = addr
 
         self.buffer = b''
+        self.resp_buffer = b''
         self.size = None
 
     def execute_cmd(self, params, cmd):
@@ -66,12 +67,18 @@ class Client(Common, Packer):
         self.refresh_state()
 
     def reply(self):
-        resp = self.response.pop()
-        try:
-            self.sock.send(self.encode(resp))
+        if not self.resp_buffer:
+            self.resp_buffer = self.encode(self.response.pop())
+		
+		try:
+		    writen = self.sock.send(self.resp_buffer)
+		    self.resp_buffer = self.resp_buffer[writen:]
         except socket.error, _:
             trace()
-        self.refresh_state()
+		finally:
+		    if not self.resp_buffer:
+		        self.resp_buffer = b''
+		        self.refresh_state()
 
     def unregister(self):
         self.talker.unregister(self.fileno)
