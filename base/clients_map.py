@@ -35,7 +35,7 @@ class Subsciber(Thread):
                 else:
                     msg = eval(d['data'])
                     uids = msg.pop('uids')
-                    self.clients.response(uids, msg)
+                    self.clients.queue(uids, msg)
 
         return self
 
@@ -75,7 +75,7 @@ class ClientsMap(object):
             del self.users[client.uid]
         del self.clients[fileno]
 
-    def response(self, uids, msg):
+    def queue(self, uids, msg):
         for uid in uids:
             client = self.users.get(uid)
             if client:

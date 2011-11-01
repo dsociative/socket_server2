@@ -43,7 +43,7 @@ class ClientsMapTest(TestCase):
         client = TestClient(FakeSocket())
         self.map.add_user(client, '1500uid')
         test_msg = {'msg':1}
-        self.map.response((client.uid,), test_msg)
+        self.map.queue((client.uid,), test_msg)
         self.assertEqual(client.resp, test_msg)
 
 

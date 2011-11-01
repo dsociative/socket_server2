@@ -43,7 +43,7 @@ class HttpSocketHandler(RequestHandler):
         self.mapper = self.application.mapper
         self.auth_func = self.application.auth_func
 
-    def response(self, msg):
+    def queue(self, msg):
         self.finish(json_encode(msg.to_dict()))
 
     @property
@@ -69,7 +69,7 @@ class HttpSocketHandler(RequestHandler):
 
         if not self.isauth_cmd(params, command_id):
             if not self.auth_func(self.client, params):
-                return self.response({'result':0, 'result_text':'auth failed'})
+                return self.queue({'result':0, 'result_text':'auth failed'})
 
         command = self.mapper.get(command_id, self.client.uid)
 
@@ -80,7 +80,7 @@ class HttpSocketHandler(RequestHandler):
         command = command(self.client)
         msg = self.execute_cmd(command, params)
         if msg:
-            self.response(msg)
+            self.queue(msg)
 
     post = get
 

@@ -66,7 +66,7 @@ class BaseHandler(Common, Thread):
         return self.register(sock, address)
 
     def run(self):
-        self.buffer = {}
+        self.request = {}
 
         while not self.epoll.closed:
             events = self.epoll.poll(self.epoll_timeout)

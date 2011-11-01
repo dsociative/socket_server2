@@ -1,9 +1,9 @@
-# coding:
-from base.common import trace, command_error
+# coding: utf8
+
+import select
 from common import Common
 from packer import Packer
-import select
-import socket
+from base.common import client_try
 
 class Client(Common, Packer):
 
@@ -15,43 +15,32 @@ class Client(Common, Packer):
 
         self.uid = uid
         self.fileno = sock.fileno()
-        self.response = []
+        self.queue = []
         self.peername = addr
 
-        self.buffer = b''
-        self.resp_buffer = b''
+        self.request = b''
+        self.response = b''
         self.size = None
 
+    @client_try
     def execute_cmd(self, params, cmd):
-        try:
-            resp = cmd(self)(params)
-            return self.add_resp(resp)
-        except:
-            command_error(self, params)
-            return None
+        resp = cmd(self)(params)
+        return self.add_resp(resp)
 
+    @client_try
     def recv(self):
-
-        try:
-            data = self.sock.recv(self.size or 4)
-            if not data:
-                self.unregister()
-            else:
-                if not self.size:
-                    self.size = self.packsize(data)
-                else:
-                    self.buffer += data
-                    if len(self.buffer) >= self.size:
-                        self.listen(self.unpack(self.size, self.buffer[:self.size]))
-                        self.buffer = b''
-                        self.size = None
-
-        except socket.error, e:
-            print e
-        except Exception, _:
-            trace()
+        data = self.sock.recv(self.size or 4)
+        if not data:
             self.unregister()
-
+        else:
+            if not self.size:
+                self.size = self.packsize(data)
+            else:
+                self.request += data
+                if len(self.request) >= self.size:
+                    self.listen(self.unpack(self.size, self.request[:self.size]))
+                    self.request = b''
+                    self.size = None
 
     def listen(self, params):
 
@@ -63,21 +52,23 @@ class Client(Common, Packer):
             self.execute_cmd(params, cmd)
 
     def add_resp(self, resp):
-        self.response.insert(0, resp)
+        self.queue.insert(0, resp)
         self.refresh_state()
 
+    def send(self):
+        written = self.sock.send(self.response)
+        self.response = self.response[written:]
+
+    @client_try
     def reply(self):
-        if not self.resp_buffer:
-            self.resp_buffer = self.encode(self.response.pop())
-        try:
-            writen = self.sock.send(self.resp_buffer)
-            self.resp_buffer = self.resp_buffer[writen:]
-        except socket.error, _:
-            trace()
-        finally:
-            if not self.resp_buffer:
-                self.resp_buffer = b''
-                self.refresh_state()
+        if not self.response:
+            self.response = self.encode(self.queue.pop())
+
+        self.send()
+
+        if not self.response:
+            self.response = b''
+            self.refresh_state()
 
     def unregister(self):
         self.talker.unregister(self.fileno)
@@ -87,14 +78,17 @@ class Client(Common, Packer):
 
     @property
     def has_reponse(self):
-        return len(self.response) > 0
+        return len(self.queue) > 0
 
-    def refresh_state(self):
+    def modify(self, etype):
         try:
-            etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
             self.poll.modify(self.fileno, etype)
         except:
-            trace()
+            self.unregister()
+
+    def refresh_state(self, etype=None):
+        etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
+        self.modify(etype)
 
     def login(self, uid):
         self.uid = uid

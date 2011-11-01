@@ -3,6 +3,7 @@
 import sys
 import traceback
 import logging
+import select
 
 
 def init_logging(level='DEBUG'):
@@ -26,3 +27,16 @@ class Common(object):
 <cross-domain-policy>
 <allow-access-from domain="*" to-ports="*" secure="false" />
 </cross-domain-policy>'''
+
+
+def client_try(f):
+
+    def w(self, *args, **kw):
+        try:
+            return f(self, *args, **kw)
+        except:
+            logging.error('%s %s' % (self.uid, f.func_name))
+            self.modify(select.EPOLLERR)
+            trace()
+
+    return w

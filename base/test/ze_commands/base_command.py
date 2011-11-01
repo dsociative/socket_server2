@@ -40,13 +40,13 @@ class Message(object):
         self.command = command
         self.time = int (time.mktime(time.localtime()))
         self.text = ''
-        self.response = {}
+        self.queue = {}
 
     def __setitem__(self, item, value):
-        self.response[item] = value
+        self.queue[item] = value
 
     def __getitem__(self, item):
-        return self.response.get(item)
+        return self.queue.get(item)
 
     def error(self, text):
         self.result = 0
@@ -61,6 +61,6 @@ class Message(object):
                 'command': self.command,
                 'time': self.time,
                 'text': self.text,
-                'response': self.response
+                'queue': self.queue
                 }
         return dict
