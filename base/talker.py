@@ -22,7 +22,7 @@ class Talker(BaseHandler, Packer):
             client.recv()
         elif event & select.EPOLLOUT:
             client.reply()
-        elif event & select.EPOLLHUP or event & select.EPOLLERR:
+        elif event & select.EPOLLERR:
             self.unregister(client.fileno)
 
 

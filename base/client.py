@@ -43,10 +43,8 @@ class Client(Common, Packer):
                     self.size = None
 
     def listen(self, params):
-
         name = params.get('command')
         cmd = self.mapper.get(name, self.uid)
-
 
         if cmd:
             self.execute_cmd(params, cmd)
