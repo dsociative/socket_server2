@@ -7,12 +7,6 @@ import select
 import socket
 
 
-def init_logging(level='DEBUG'):
-    format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    level = logging.WARNING
-
-    logging.basicConfig(format=format, level=level)
-
 def trace():
     traceback.print_exc(file=sys.stderr)
 
@@ -32,8 +26,8 @@ def client_try(f):
         except socket.error:
             self.modify(select.EPOLLERR)
         except:
-            logging.error('%s %s' % (self.uid, f.func_name))
+            err_str = '%s %s %s' % (self.uid, f.im_class.__name__, f.func_name)
+            logging.error(err_str, exc_info=True)
             self.modify(select.EPOLLERR)
-            trace()
 
     return w
