@@ -4,6 +4,7 @@ import select
 from common import Common
 from packer import Packer
 from base.common import client_try
+import logging
 
 class Client(Common, Packer):
 
@@ -22,10 +23,12 @@ class Client(Common, Packer):
         self.response = b''
         self.size = None
 
-    @client_try
     def execute_cmd(self, params, cmd):
-        resp = cmd(self)(params)
-        return self.add_resp(resp)
+        try:
+            resp = cmd(self)(params)
+            return self.add_resp(resp)
+        except:
+            logging.error('%s %s' % (self.uid, cmd.name), exc_info=True)
 
     @client_try
     def recv(self):
