@@ -7,7 +7,6 @@ import os
 import sys
 
 
-
 class SocketServer(Thread):
 
     def __init__(self, name, config, mapper, auth_func, urls={}):
@@ -31,7 +30,6 @@ class SocketServer(Thread):
             self.http_socket = HttpSocket(self.mapper, auth_func,
                                           self.http_port, urls=urls)
             self.http_socket.start()
-
 
     def run(self):
         self.talker.run()

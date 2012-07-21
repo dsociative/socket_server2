@@ -81,7 +81,6 @@ class ClientsMap(object):
             if client:
                 client.add_resp(msg)
 
-
     def add_user(self, client, uid):
         existing_client = self.users.get(uid)
         if existing_client:

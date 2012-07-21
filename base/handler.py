@@ -15,7 +15,6 @@ class BaseHandler(Common, Thread):
     epoll_timeout = 2
     address = ''
 
-
     def __init__(self, config):
         Thread.__init__(self)
 
@@ -77,7 +76,6 @@ class BaseHandler(Common, Thread):
                     client = self.clients.get(no)
                     if client:
                         self.process(client, event)
-
 
     def stop(self):
         self.epoll.close()
