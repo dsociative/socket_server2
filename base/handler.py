@@ -1,7 +1,7 @@
 # coding: utf8
 
-from base.clients_map import ClientsMap
-from base.common import trace
+from clients_map import ClientsMap
+from common import trace
 from common import Common
 from threading import Thread
 import logging

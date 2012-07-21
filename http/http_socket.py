@@ -1,5 +1,6 @@
 # coding: utf8
-from base.common import command_error
+
+from ..base.common import command_error
 from threading import Thread
 from tornado.escape import json_encode
 from tornado.httpserver import HTTPServer
