@@ -47,18 +47,8 @@ class ClientsMap(object):
 
     def __init__(self, talker, config):
         self.talker = talker
-
-        self.host = config.get('redis', 'host')
-        self.port = config.getint('redis', 'port')
-        self.db = config.getint('redis', 'db')
-
         self.clients = {}
         self.users = {}
-        self.redis = Redis(host=self.host, port=self.port, db=self.db)
-        self.channel = config.get('sockets', 'db_channel')
-
-        self.subcriber = Subsciber(self, self.channel)
-        self.subcriber.start()
 
     def __setitem__(self, fileno, client):
         self.clients[fileno] = client
