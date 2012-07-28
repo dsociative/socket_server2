@@ -45,4 +45,4 @@ class Packer():
 
     def encode(self, params):
         data = pyamf.encode(params)
-        return self.pack(data.read()) + '\0'
+        return self.pack(data.read())
