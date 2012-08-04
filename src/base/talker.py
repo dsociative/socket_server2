@@ -25,5 +25,7 @@ class Talker(BaseHandler, Packer):
         elif event & select.EPOLLHUP or event & select.EPOLLERR:
             self.unregister(client.fileno)
 
+
     def stop(self):
         BaseHandler.stop(self)
+        self.clients.subcriber.stop()

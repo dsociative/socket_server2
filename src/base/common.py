@@ -10,16 +10,13 @@ import socket
 def trace():
     traceback.print_exc(file=sys.stderr)
 
-
 def command_error(client, params):
     logging.warning("uid:%s %s" % (client.uid, params))
     trace()
 
-
 class Common(object):
 
     mapper = None
-
 
 def client_try(f):
 
