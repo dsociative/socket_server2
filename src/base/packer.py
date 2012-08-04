@@ -43,6 +43,7 @@ class Packer():
         sbin, data = self.split(data)
         return self.unpack(self.packsize(sbin), data)
 
+
     def encode(self, params):
         data = pyamf.encode(params)
         return self.pack(data.read())
