@@ -1,5 +1,7 @@
 # coding: utf8
 
+from redis.client import Redis
+
 
 class ClientsMap(object):
 
