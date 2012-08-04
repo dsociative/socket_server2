@@ -3,8 +3,10 @@
 import _struct as struct
 import pyamf
 
+
 class PackerDecodeError(Exception):
     pass
+
 
 class Packer():
 
@@ -39,7 +41,6 @@ class Packer():
 
         sbin, data = self.split(data)
         return self.unpack(self.packsize(sbin), data)
-
 
     def encode(self, params):
         data = pyamf.encode(params)

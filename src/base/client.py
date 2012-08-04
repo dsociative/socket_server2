@@ -25,8 +25,7 @@ class Client(Common, Packer):
 
     def execute_cmd(self, params, cmd):
         try:
-            msg = cmd(self)(params)
-            self.talker.clients.queue(msg.pop('uids'), msg)
+            cmd(self)(params)
         except:
             logging.error('%s %s' % (self.uid, cmd.name), exc_info=True)
 
