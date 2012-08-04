@@ -25,8 +25,7 @@ class Client(Common, Packer):
 
     def execute_cmd(self, params, cmd):
         try:
-            resp = cmd(self)(params)
-            return self.add_resp(resp)
+            cmd(self)(params)
         except:
             logging.error('%s %s' % (self.uid, cmd.name), exc_info=True)
 
