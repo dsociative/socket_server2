@@ -9,8 +9,6 @@ import select
 
 class Talker(BaseHandler, Packer):
 
-    port = 8885
-
     def register(self, sock, addr, type=select.POLLIN):
         self.clients[sock.fileno()] = Client(sock, addr, self)
 
@@ -24,7 +22,6 @@ class Talker(BaseHandler, Packer):
             client.reply()
         elif event & select.EPOLLHUP or event & select.EPOLLERR:
             self.unregister(client.fileno)
-
 
     def stop(self):
         BaseHandler.stop(self)

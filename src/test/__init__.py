@@ -1,11 +1,21 @@
 # coding: utf8
+from ConfigParser import ConfigParser
+import logging
+import os
 import time
 import unittest
-import logging
 
 logging_frm = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging_level = logging.DEBUG
 logging.basicConfig(format=logging_frm, level=logging_level)
+
+
+def get_config():
+    config_path = os.path.abspath('test_config.cfg')
+    config = ConfigParser()
+    config.read(config_path)
+    return config
+
 
 class TestCase(unittest.TestCase):
 

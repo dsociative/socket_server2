@@ -40,4 +40,3 @@ class SocketServer(Thread):
         self.talker.stop()
         print 'socket is closed'
         sys.exit(0)
-

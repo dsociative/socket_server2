@@ -1,7 +1,7 @@
 # coding:utf8
 from base.client import Client
 from base.clients_map import ClientsMap
-from base.test.test_case import TestCase
+from test import TestCase
 
 class TestClient(Client):
 

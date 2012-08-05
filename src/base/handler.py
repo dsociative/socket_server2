@@ -1,8 +1,8 @@
 # coding: utf8
 
 from clients_map import ClientsMap
-from common import trace
-from common import Common
+from common import Common, trace
+from test.ze_commands.ze_mapper import Mapper
 from threading import Thread
 import logging
 import select
@@ -11,14 +11,12 @@ import socket
 
 class BaseHandler(Common, Thread):
 
-    port = 8885
     epoll_timeout = 2
-    address = ''
 
-    def __init__(self, config):
+    def __init__(self, config, port=8885, address='', mapper=Mapper()):
         Thread.__init__(self)
-
-        self.socket = self.create_socket()
+        self.port = port
+        self.socket = self.create_socket(port, address)
         self.fileno = self.socket.fileno()
 
         self.epoll = select.epoll()
@@ -26,10 +24,12 @@ class BaseHandler(Common, Thread):
 
         self.clients = ClientsMap(self, config)
 
-    def create_socket(self):
+        Common.set_mapper(mapper)
+
+    def create_socket(self, port, address):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        sock.bind((self.address, self.port))
+        sock.bind((address, port))
         sock.listen(2)
         sock.setblocking(0)
         return sock
@@ -78,6 +78,7 @@ class BaseHandler(Common, Thread):
                         self.process(client, event)
 
     def stop(self):
+        self.unregister(self.socket.fileno())
         self.epoll.close()
         self.socket.close()
 

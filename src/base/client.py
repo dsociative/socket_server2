@@ -6,6 +6,7 @@ from packer import Packer
 from common import client_try
 import logging
 
+
 class Client(Common, Packer):
 
     def __init__(self, sock, addr, talker, uid=None):

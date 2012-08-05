@@ -1,6 +1,6 @@
 # coding: utf8
 
-from packer import Packer
+from base.packer import Packer
 import logging
 import socket
 
@@ -17,7 +17,7 @@ class Sender(Packer):
         return self
 
     def send(self, data):
-        self.socket.send(self.encode(data)[:-1])
+        self.socket.send(self.encode(data))
 
     def recv(self):
         size_data = None

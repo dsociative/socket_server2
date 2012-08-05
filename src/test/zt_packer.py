@@ -1,7 +1,7 @@
 # coding: utf8
 
 from packer import Packer
-from test.test_case import TestCase
+from test import TestCase
 
 class Zt_Packer(TestCase):
 

@@ -1,4 +1,4 @@
-from base.test.ze_commands.authoriztion import Authorization
+from test.ze_commands.authoriztion import Authorization
 
 
 class Mapper(object):

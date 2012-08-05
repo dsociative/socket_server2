@@ -2,21 +2,14 @@
 
 from base.sender import Sender
 from base.talker import Talker
-from base.test.test_case import TestCase
+from test import TestCase, get_config
 import time
-from ConfigParser import ConfigParser
 
 class Zt_Talker_Base(TestCase):
 
     def tearDown(self):
         self.talker.close()
         time.sleep(Talker.epoll_timeout)
-
-
-def get_config():
-    config = ConfigParser()
-    config.read('test_config.cfg')
-    return config
 
 
 class Zt_Talker_Threading(Zt_Talker_Base):
