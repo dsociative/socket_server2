@@ -40,7 +40,8 @@ class Subsciber(Thread):
         return self
 
     def stop(self):
-        self.clients.redis.publish(self.channel, self.closemsg)
+        pass
+#        self.clients.redis.publish(self.channel, self.closemsg)
 
 
 class ClientsMap(object):

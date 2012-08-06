@@ -11,7 +11,6 @@ class Client(Common, Packer):
 
     def __init__(self, sock, addr, talker, uid=None):
         self.sock = sock
-
         self.talker = talker
         self.poll = talker.epoll
 
