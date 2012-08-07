@@ -1,5 +1,6 @@
 # coding: utf8
 
+from base.common import Common
 from test.ze_commands.base_command import BaseCommand
 
 
@@ -9,6 +10,5 @@ class Authorization(BaseCommand):
     params = 'uid', 'auth_key'
 
     def execute(self, uid, auth_key):
-        self.client.login(uid)
-
+        Common.clients.add_user(self.client, uid)
         return self.msg

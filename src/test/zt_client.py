@@ -1,7 +1,7 @@
 # coding: utf8
 
 from base.talker import Talker
-from test import TestCase, get_config
+from test import TestCase
 from util.sender import Sender
 import time
 
@@ -13,7 +13,7 @@ class Zt_Base(TestCase):
 
     def setUp(self):
         self.wait()
-        self.talker = Talker(get_config(), port=64533)
+        self.talker = Talker(port=64533)
         Talker.epoll_timeout = 0.1
         Talker.port = 64536
 
@@ -56,7 +56,7 @@ class Zt_Clien_Socket(Zt_Base):
         return self.talker.clients.clients.values().pop()
 
     def test_reply(self):
-        request = {'hello':'world'}
+        request = {'hello': 'world'}
 
         self.client.add_resp(request)
         sender_response = self.sender.parse()

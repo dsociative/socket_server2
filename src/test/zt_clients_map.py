@@ -1,9 +1,8 @@
 # coding:utf8
 
 from base.client import Client
-from base.clients_map import ClientsMap
 from base.talker import Talker
-from test import TestCase, get_config
+from test import TestCase
 import socket
 import time
 
@@ -35,8 +34,7 @@ def wait_for(func, tick=0.01, out=1):
 class ClientsMapTest(TestCase):
 
     def setUp(self):
-        self.config = get_config()
-        self.talker = Talker(self.config)
+        self.talker = Talker()
         self.map = self.talker.clients
 
         self.talker.start()

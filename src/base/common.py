@@ -21,8 +21,9 @@ class Common(object):
     mapper = None
 
     @classmethod
-    def set_mapper(cls, mapper):
+    def set_mapper(cls, mapper, clients):
         cls.mapper = mapper
+        cls.clients = clients
 
 
 def client_try(f):

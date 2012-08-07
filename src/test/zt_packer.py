@@ -1,12 +1,13 @@
 # coding: utf8
 
-from packer import Packer
+from base.packer import Packer
 from test import TestCase
+
 
 class Zt_Packer(TestCase):
 
     def setUp(self):
-        self.data = {'param1':'param2', '1':123, 'q':{'other':'me'}}
+        self.data = {'param1': 'param2', '1': 123, 'q': {'other': 'me'}}
         self.packer = Packer()
 
     def test_data(self):

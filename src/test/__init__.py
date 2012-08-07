@@ -10,13 +10,6 @@ logging_level = logging.DEBUG
 logging.basicConfig(format=logging_frm, level=logging_level)
 
 
-def get_config():
-    config_path = os.path.abspath('test_config.cfg')
-    config = ConfigParser()
-    config.read(config_path)
-    return config
-
-
 class TestCase(unittest.TestCase):
 
     def wait_equal(self, attr, expected):

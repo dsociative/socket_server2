@@ -2,6 +2,7 @@
 
 from clients_map import ClientsMap
 from common import Common, trace
+from redis.client import Redis
 from test.ze_commands.ze_mapper import Mapper
 from threading import Thread
 import logging
@@ -13,7 +14,8 @@ class BaseHandler(Common, Thread):
 
     epoll_timeout = 2
 
-    def __init__(self, config, port=8885, address='', mapper=Mapper()):
+    def __init__(self, port=8885, address='', mapper=Mapper(),
+                 db_channel='socket', redis=Redis()):
         Thread.__init__(self)
         self.port = port
         self.socket = self.create_socket(port, address)
@@ -22,9 +24,9 @@ class BaseHandler(Common, Thread):
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
 
-        self.clients = ClientsMap(self, config)
+        self.clients = ClientsMap(self, redis, db_channel)
 
-        Common.set_mapper(mapper)
+        Common.set_mapper(mapper, self.clients)
 
     def create_socket(self, port, address):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -78,7 +80,7 @@ class BaseHandler(Common, Thread):
                         self.process(client, event)
 
     def stop(self):
-        self.unregister(self.socket.fileno())
+        self.unregister(self.fileno)
         self.epoll.close()
         self.socket.close()
 

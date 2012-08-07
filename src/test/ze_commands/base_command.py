@@ -1,4 +1,6 @@
 # coding: utf8
+from base.common import Common
+from redis.client import Redis
 import time
 
 
@@ -10,6 +12,7 @@ class BaseCommand(object):
     def __init__(self, client):
         self.msg = Message(self.name)
         self.client = client
+        self.redis = Redis()
 
     def __call__(self, params):
 
@@ -17,7 +20,8 @@ class BaseCommand(object):
             return
 
         params.pop('command')
-        return self.execute(**params)
+        msg = self.execute(**params)
+        Common.clients.send(msg.to_dict(), self.client.uid)
 
     def check_params(self, real):
         fail = []
@@ -32,15 +36,15 @@ class BaseCommand(object):
             return True
 
 
-
 class Message(object):
 
     def __init__(self, command):
         self.result = 1
         self.command = command
-        self.time = int (time.mktime(time.localtime()))
+        self.time = int(time.mktime(time.localtime()))
         self.text = ''
         self.queue = {}
+        self.uids = []
 
     def __setitem__(self, item, value):
         self.queue[item] = value
@@ -56,11 +60,11 @@ class Message(object):
         self.error('params not found: %s' % ', '.join(params))
 
     def to_dict(self):
-        dict = {
+        return {
                 'result': self.result,
                 'command': self.command,
                 'time': self.time,
                 'text': self.text,
-                'queue': self.queue
+                'queue': self.queue,
+                'uids': self.uids,
                 }
-        return dict

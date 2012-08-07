@@ -38,4 +38,3 @@ class Sender(Packer):
             logging.warning(err)
         self.socket.close()
         self.status = False
-
