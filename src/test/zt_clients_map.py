@@ -3,6 +3,7 @@
 from base.client import Client
 from base.talker import Talker
 from test import TestCase
+from test.ze_commands.ze_mapper import Mapper
 import socket
 import time
 
@@ -34,7 +35,7 @@ def wait_for(func, tick=0.01, out=1):
 class ClientsMapTest(TestCase):
 
     def setUp(self):
-        self.talker = Talker()
+        self.talker = Talker(Mapper())
         self.map = self.talker.clients
 
         self.talker.start()

@@ -2,6 +2,7 @@
 
 from base.talker import Talker
 from test import TestCase
+from test.ze_commands.ze_mapper import Mapper
 from util.sender import Sender
 import time
 
@@ -13,7 +14,7 @@ class Zt_Base(TestCase):
 
     def setUp(self):
         self.wait()
-        self.talker = Talker(port=64533)
+        self.talker = Talker(Mapper(), port=64533)
         Talker.epoll_timeout = 0.1
         Talker.port = 64536
 

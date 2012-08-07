@@ -1,6 +1,5 @@
 # coding: utf8
 
-from redis import Redis
 from threading import Thread
 from random import random
 
@@ -43,8 +42,7 @@ class Subsciber(Thread):
         return self
 
     def stop(self):
-        pass
-#        self.clients.redis.publish(self.channel, self.closemsg)
+        self.clients.redis.publish(self.channel, self.closemsg)
 
 
 class ClientsMap(object):

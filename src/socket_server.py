@@ -14,9 +14,9 @@ class SocketServer(Thread):
 
         self.mapper = mapper
         self.http_port = config.getint('sockets', 'http_port')
-
-        Talker.port = config.getint('sockets', 'socket_port')
-        self.talker = Talker(config)
+        self.talker = Talker(mapper,
+                             port=config.getint('sockets', 'socket_port'),
+                             db_channel=config.get('sockets', 'db_channel'))
 
         def named(s):
             return s % name

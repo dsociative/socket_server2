@@ -2,6 +2,7 @@
 
 from base.talker import Talker
 from test import TestCase
+from test.ze_commands.ze_mapper import Mapper
 from util.sender import Sender
 import random
 import time
@@ -12,7 +13,7 @@ class Zt_Talker_Base(TestCase):
     def setUp(self):
         port = random.choice(range(5000, 6500))
         Talker.epoll_timeout = 0.1
-        self.talker = Talker(port=port)
+        self.talker = Talker(Mapper(), port=port)
         self.talker.start()
         self.sender = Sender('', port)
 

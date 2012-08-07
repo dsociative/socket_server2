@@ -3,7 +3,6 @@
 from clients_map import ClientsMap
 from common import Common, trace
 from redis.client import Redis
-from test.ze_commands.ze_mapper import Mapper
 from threading import Thread
 import logging
 import select
@@ -14,8 +13,8 @@ class BaseHandler(Common, Thread):
 
     epoll_timeout = 2
 
-    def __init__(self, port=8885, address='', mapper=Mapper(),
-                 db_channel='socket', redis=Redis()):
+    def __init__(self, mapper, port=8885, address='', db_channel='socket',
+                 redis=Redis()):
         Thread.__init__(self)
         self.port = port
         self.socket = self.create_socket(port, address)
