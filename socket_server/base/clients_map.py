@@ -1,6 +1,6 @@
 # coding: utf8
 
-from util.subscriber import Subscriber
+from socket_server.util.subscriber import Subscriber
 
 
 class Subsciber(Subscriber):

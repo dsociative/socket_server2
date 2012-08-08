@@ -7,6 +7,6 @@ setup(name='socket server2',
       author='dsociative',
       author_email='admin@geektech.ru',
       packages=['socket_server', 'socket_server.base',
-                'socket_server.ext', 'socket_server.http'],
-      package_dir={'socket_server': 'src'},
+                'socket_server.ext', 'socket_server.http',
+                'socket_server.util'],
      )
