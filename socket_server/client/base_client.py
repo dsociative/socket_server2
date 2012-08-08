@@ -1,13 +1,11 @@
 # coding: utf8
 
+from socket_server.base.common import Common, client_try
+from socket_server.base.packer import Packer
 import select
-from common import Common
-from packer import Packer
-from common import client_try
-import logging
 
 
-class Client(Common, Packer):
+class BaseClient(Common, Packer):
 
     def __init__(self, sock, addr, talker, uid=None):
         self.sock = sock
@@ -22,12 +20,6 @@ class Client(Common, Packer):
         self.request = b''
         self.response = b''
         self.size = None
-
-    def execute_cmd(self, params, cmd):
-        try:
-            cmd(self)(params)
-        except:
-            logging.error('%s %s' % (self.uid, cmd.name), exc_info=True)
 
     @client_try
     def recv(self):
@@ -44,12 +36,8 @@ class Client(Common, Packer):
                     self.request = b''
                     self.size = None
 
-    def listen(self, params):
-        name = params.get('command')
-        cmd = self.mapper.get(name, self.uid)
-
-        if cmd:
-            self.execute_cmd(params, cmd)
+    def listen(self, request):
+        ''' What to do with request? '''
 
     def add_resp(self, resp):
         self.queue.insert(0, resp)
@@ -89,10 +77,3 @@ class Client(Common, Packer):
     def refresh_state(self, etype=None):
         etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
         self.modify(etype)
-
-    def login(self, uid):
-        self.uid = uid
-
-    @property
-    def logged(self):
-        return self.uid != None

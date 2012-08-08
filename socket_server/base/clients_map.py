@@ -23,7 +23,7 @@ class ClientsMap(object):
         self.talker = talker
 
         self.clients = {}
-        self.users = {}
+
         self.redis = redis
         self.channel = db_channel
         self.channel_disconnect = '_'.join((db_channel, 'disconnect'))
@@ -42,9 +42,7 @@ class ClientsMap(object):
 
     def __delitem__(self, fileno):
         client = self.clients[fileno]
-        if client.logged:
-            self.redis.publish(self.channel_disconnect, client.uid)
-            del self.users[client.uid]
+        client.close()
         del self.clients[fileno]
 
     def queue(self, uids, msg):
@@ -52,14 +50,6 @@ class ClientsMap(object):
             client = self.users.get(uid)
             if client:
                 client.add_resp(msg)
-
-    def add_user(self, client, uid):
-        existing_client = self.users.get(uid)
-        if existing_client:
-            self.talker.unregister(existing_client.fileno)
-
-        client.uid = uid
-        self.users[client.uid] = client
 
     def send(self, msg, *uids):
         msg['uids'] = uids

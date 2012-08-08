@@ -3,6 +3,7 @@
 from clients_map import ClientsMap
 from common import Common, trace
 from redis.client import Redis
+from socket_server.client.simple_client import SimpleClient
 from threading import Thread
 import logging
 import select
@@ -13,9 +14,10 @@ class BaseHandler(Common, Thread):
 
     epoll_timeout = 2
 
-    def __init__(self, mapper, port=8885, address='', db_channel='socket',
-                 redis=Redis()):
+    def __init__(self, port=8885, address='', db_channel='socket',
+                 redis=Redis(), client_cls=SimpleClient):
         Thread.__init__(self)
+        self.client_cls = client_cls
         self.port = port
         self.socket = self.create_socket(port, address)
         self.fileno = self.socket.fileno()
@@ -24,8 +26,6 @@ class BaseHandler(Common, Thread):
         self.epoll_register(self.socket)
 
         self.clients = ClientsMap(self, redis, db_channel)
-
-        Common.set_mapper(mapper, self.clients)
 
     def create_socket(self, port, address):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
