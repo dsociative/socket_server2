@@ -4,7 +4,21 @@ from base.talker import Talker
 from test import TestCase
 from test.ze_commands.ze_mapper import Mapper
 from util.sender import Sender
+from util.subscriber import Subscriber
 import time
+
+AUTH_DICT = {"command": "user.authorization", "uid": "6104128459101111038",
+             "auth_key": "599bf8e08afc3003d0db1a7f048eee49"}
+
+
+class TestSubscriber(Subscriber):
+
+    def __init__(self, redis, channel):
+        Subscriber.__init__(self, redis, channel)
+        self.data = []
+
+    def process(self, message):
+        self.data.append(message)
 
 
 class Zt_Base(TestCase):
@@ -54,7 +68,7 @@ class Zt_Clien_Socket(Zt_Base):
         self.client = self.pop_client()
 
     def pop_client(self):
-        return self.talker.clients.clients.values().pop()
+        return self.talker.clients.clients.values()[0]
 
     def test_reply(self):
         request = {'hello': 'world'}
@@ -64,15 +78,20 @@ class Zt_Clien_Socket(Zt_Base):
         self.assertEqual(sender_response, request)
 
     def test_login(self):
-
-        data = {"command": "user.authorization",
-                 "uid": "6104128459101111038",
-                 "auth_key": "599bf8e08afc3003d0db1a7f048eee49"}
-
         self.client = self.pop_client()
 
         self.assertEqual(self.client.logged, False)
-        self.sender.send(data)
+        self.sender.send(AUTH_DICT)
         time.sleep(Talker.epoll_timeout)
         self.assertEqual(self.client.logged, True)
 
+    def test_disconnect_event(self):
+        subcriber = TestSubscriber(self.talker.clients.redis,
+                                   self.talker.clients.channel + '_disconnect')
+        subcriber.start()
+        self.sender.send(AUTH_DICT)
+        client = self.pop_client()
+        self.wait_equal(lambda: client.logged, True)
+        self.sender.close()
+        self.wait_equal(lambda: subcriber.data, [AUTH_DICT['uid']])
+        subcriber.stop()

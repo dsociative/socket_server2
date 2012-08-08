@@ -34,6 +34,7 @@ class TestCase(unittest.TestCase):
 
             time.sleep(0.1)
 
+
 def log_debug(f):
 
     def wrapper(obj, *args, **kwargs):
