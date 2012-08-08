@@ -25,7 +25,7 @@ class BaseHandler(Common, Thread):
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
 
-        self.clients = ClientsMap(self, redis, db_channel)
+        self.clients = ClientsMap(self)
 
     def create_socket(self, port, address):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

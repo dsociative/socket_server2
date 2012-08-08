@@ -14,7 +14,7 @@ class SimpleClient(BaseClient):
 
     def listen(self, params):
         name = params.get('command')
-        cmd = self.mapper.get(name, self.uid)
-
-        if cmd:
-            self.execute_cmd(params, cmd)
+#        cmd = self.mapper.get(name, self.uid)
+#
+#        if cmd:
+#            self.execute_cmd(params, cmd)

@@ -7,12 +7,15 @@ import select
 
 class BaseClient(Common, Packer):
 
-    def __init__(self, sock, addr, talker, uid=None):
+    count = 0
+
+    def __init__(self, sock, addr, talker):
+        self.id = self.__get_id()
+
         self.sock = sock
         self.talker = talker
         self.poll = talker.epoll
 
-        self.uid = uid
         self.fileno = sock.fileno()
         self.queue = []
         self.peername = addr
@@ -20,6 +23,10 @@ class BaseClient(Common, Packer):
         self.request = b''
         self.response = b''
         self.size = None
+
+    def __get_id(self):
+        BaseClient.count += 1
+        return self.count
 
     @client_try
     def recv(self):
@@ -62,7 +69,8 @@ class BaseClient(Common, Packer):
         self.talker.unregister(self.fileno)
 
     def close(self):
-        return self.sock.close()
+        self.sock.close()
+        self.disconnect(self.id)
 
     @property
     def has_reponse(self):

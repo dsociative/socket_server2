@@ -1,6 +1,7 @@
 # coding: utf8
 
 from base.talker import Talker
+from socket_server.client.test_client import TestClient
 from test import TestCase
 from util.sender import Sender
 import time
@@ -16,7 +17,7 @@ class Zt_Base(TestCase):
 
     def setUp(self):
         self.wait()
-        self.talker = Talker(port=64533)
+        self.talker = Talker(port=64533, client_cls=TestClient)
         Talker.epoll_timeout = 0.1
         Talker.port = 64536
 
@@ -66,7 +67,9 @@ class Zt_Clien_Socket(Zt_Base):
         self.assertEqual(sender_response, request)
 
     def test_disconnect_event(self):
+        TestClient.disconnected = []
         self.sender.send(AUTH_DICT)
         client = self.pop_client()
+        self.assertEqual(client.id, 1)
         self.sender.close()
-        subcriber.stop()
+        self.wait_equal(lambda: TestClient.disconnected, [client.id])

@@ -34,7 +34,7 @@ def client_try(f):
         except socket.error:
             self.modify(select.EPOLLERR)
         except:
-            err_str = '%s %s' % (self.uid, f.func_name)
+            err_str = '%s %s' % (self.id, f.func_name)
             logging.error(err_str, exc_info=True)
             self.modify(select.EPOLLERR)
 

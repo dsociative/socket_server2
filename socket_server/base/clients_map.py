@@ -1,35 +1,11 @@
 # coding: utf8
 
-from socket_server.util.subscriber import Subscriber
-
-
-class Subsciber(Subscriber):
-
-    def __init__(self, clients_map, channel='messaging'):
-        self.clients = clients_map
-        Subscriber.__init__(self, clients_map.redis, channel)
-
-    def parse(self, data):
-        return eval(data)
-
-    def process(self, message):
-        uids = message.pop('uids')
-        self.clients.queue(uids, message)
-
 
 class ClientsMap(object):
 
-    def __init__(self, talker, redis, db_channel):
+    def __init__(self, talker):
         self.talker = talker
-
         self.clients = {}
-
-        self.redis = redis
-        self.channel = db_channel
-        self.channel_disconnect = '_'.join((db_channel, 'disconnect'))
-
-        self.subcriber = Subsciber(self, self.channel)
-        self.subcriber.start()
 
     def __setitem__(self, fileno, client):
         self.clients[fileno] = client
@@ -41,8 +17,6 @@ class ClientsMap(object):
         return self.clients.get(fileno)
 
     def __delitem__(self, fileno):
-        client = self.clients[fileno]
-        client.close()
         del self.clients[fileno]
 
     def queue(self, uids, msg):
