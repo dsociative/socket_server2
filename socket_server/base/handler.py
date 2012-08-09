@@ -1,8 +1,8 @@
 # coding: utf8
 
-from clients_map import ClientsMap
-from common import Common, trace
 from redis.client import Redis
+from socket_server.base.clients_map import ClientsMap
+from socket_server.base.common import Common, trace
 from socket_server.client.simple_client import SimpleClient
 from threading import Thread
 import logging

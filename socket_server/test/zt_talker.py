@@ -1,9 +1,9 @@
 # coding: utf8
 
-from base.talker import Talker
+from socket_server.base.talker import Talker
+from socket_server.client.test_client import TestClient
+from socket_server.util.sender import Sender
 from test import TestCase
-from test.ze_commands.ze_mapper import Mapper
-from util.sender import Sender
 import random
 import time
 
@@ -13,7 +13,7 @@ class Zt_Talker_Base(TestCase):
     def setUp(self):
         port = random.choice(range(5000, 6500))
         Talker.epoll_timeout = 0.1
-        self.talker = Talker(Mapper(), port=port)
+        self.talker = Talker(port=port, client_cls=TestClient)
         self.talker.start()
         self.sender = Sender('', port)
 
@@ -44,4 +44,4 @@ class Zt_Talker(Zt_Talker_Base):
 
     def test_command(self):
         self.sender.send(self.data)
-        self.assertEqual(self.sender.parse()['result'], 1)
+        self.assertEqual(self.sender.parse(), 'hello')

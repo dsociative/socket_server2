@@ -70,6 +70,5 @@ class Zt_Clien_Socket(Zt_Base):
         TestClient.disconnected = []
         self.sender.send(AUTH_DICT)
         client = self.pop_client()
-        self.assertEqual(client.id, 1)
         self.sender.close()
         self.wait_equal(lambda: TestClient.disconnected, [client.id])

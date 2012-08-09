@@ -9,3 +9,6 @@ class TestClient(SimpleClient):
 
     def disconnect(self, id):
         self.disconnected.append(id)
+
+    def listen(self, message):
+        self.add_resp('hello')
