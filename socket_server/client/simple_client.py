@@ -6,6 +6,10 @@ import logging
 
 class SimpleClient(BaseClient):
 
+    @classmethod
+    def set_mapper(cls, mapper):
+        cls.mapper = mapper
+
     def execute_cmd(self, params, cmd):
         try:
             cmd(self)(params)
@@ -14,7 +18,7 @@ class SimpleClient(BaseClient):
 
     def listen(self, params):
         name = params.get('command')
-#        cmd = self.mapper.get(name, self.uid)
-#
-#        if cmd:
-#            self.execute_cmd(params, cmd)
+        cmd = self.mapper.get(name, self.uid)
+
+        if cmd:
+            self.execute_cmd(params, cmd)

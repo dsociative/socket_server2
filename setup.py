@@ -8,5 +8,5 @@ setup(name='socket server2',
       author_email='admin@geektech.ru',
       packages=['socket_server', 'socket_server.base',
                 'socket_server.ext', 'socket_server.http',
-                'socket_server.util'],
+                'socket_server.util', 'socket_server.client'],
      )

@@ -43,7 +43,14 @@ class ClientsMapTest(TestCase):
         self.assertEqual(len(self.map.clients), 1)
         client = self.map.clients.values()[0]
         self.assertIsInstance(client, TestClient)
+        self.assertEqual(client, self.map.users[client.id])
 
         self.sock.close()
         wait_for(lambda: not self.map.clients)
         self.assertEqual(self.map.clients, {})
+
+    def test_queue(self):
+        client = TestClient(FakeSocket(), None, self.talker)
+        self.map[0] = client
+        self.map.queue([client.id], 'hello')
+        self.assertEqual(client.queue, ['hello'])

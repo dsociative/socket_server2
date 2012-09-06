@@ -14,8 +14,8 @@ class BaseHandler(Common, Thread):
 
     epoll_timeout = 2
 
-    def __init__(self, port=8885, address='', db_channel='socket',
-                 redis=Redis(), client_cls=SimpleClient):
+    def __init__(self, port=8885, address='', redis=Redis(),
+                 client_cls=SimpleClient):
         Thread.__init__(self)
         self.client_cls = client_cls
         self.port = port

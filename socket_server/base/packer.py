@@ -28,7 +28,8 @@ class Packer():
         if not size:
             raise PackerDecodeError('size not found')
         elif size != len(data):
-            raise PackerDecodeError('size:%s != data length:%s' % (size, len(data)))
+            raise PackerDecodeError('size:%s != data length:%s' % (size,
+                                                                   len(data)))
 
         return pyamf.decode(data).readElement()
 
