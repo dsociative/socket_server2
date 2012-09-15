@@ -1,7 +1,7 @@
 # coding: utf8
 
 import _struct as struct
-import pyamf
+import json
 
 
 class PackerDecodeError(Exception):
@@ -31,7 +31,7 @@ class Packer():
             raise PackerDecodeError('size:%s != data length:%s' % (size,
                                                                    len(data)))
 
-        return pyamf.decode(data).readElement()
+        return json.loads(data)
 
     def split(self, data):
         return data[:self.SBIN_SIZE], data[self.SBIN_SIZE:]
@@ -44,5 +44,4 @@ class Packer():
         return self.unpack(self.packsize(sbin), data)
 
     def encode(self, params):
-        data = pyamf.encode(params)
-        return self.pack(data.read())
+        return self.pack(json.dumps(params))
