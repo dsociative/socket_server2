@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     runner = unittest2.TextTestRunner()
     loader = unittest2.TestLoader()
-    suites = loader.discover('./test', pattern='zt_*.py')
+    suites = loader.discover('socket_server/test', pattern='zt_*.py')
     for suite in suites:
         result = runner.run(suite)
         errors += len(result.errors)

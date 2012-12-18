@@ -1,7 +1,7 @@
 # coding: utf8
 
-from base.packer import Packer
-from test import TestCase
+from socket_server.base.packer import Packer
+from socket_server.test import TestCase
 
 
 class Zt_Packer(TestCase):

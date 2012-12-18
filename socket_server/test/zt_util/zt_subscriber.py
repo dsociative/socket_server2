@@ -1,8 +1,8 @@
 # coding: utf8
 
 from redis.client import Redis
-from test import TestCase
-from util.subscriber import Subscriber
+from socket_server.test import TestCase
+from socket_server.util.subscriber import Subscriber
 
 
 class SubscriberTest(TestCase):

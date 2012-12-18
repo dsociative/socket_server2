@@ -1,10 +1,12 @@
 # coding: utf8
-from base.common import Common
-from redis.client import Redis
 import time
 
+from redis.client import Redis
+from socket_server.base.common import Common
+from socket_server.command import ServerCommand
 
-class BaseCommand(object):
+
+class BaseCommand(ServerCommand):
 
     name = 'base.command'
     params = ()

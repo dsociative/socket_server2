@@ -1,7 +1,7 @@
 # coding: utf8
 
-from base.common import Common
-from test.ze_commands.base_command import BaseCommand
+from socket_server.base.common import Common
+from socket_server.test.base_command import BaseCommand
 
 
 class Authorization(BaseCommand):
@@ -12,3 +12,10 @@ class Authorization(BaseCommand):
     def execute(self, uid, auth_key):
         Common.clients.add_user(self.client, uid)
         return self.msg
+
+
+class TrashClass(object):
+    """
+    For Tests
+    """
+    pass

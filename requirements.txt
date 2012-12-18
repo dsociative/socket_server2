@@ -1,1 +1,4 @@
 unittest2
+redis
+pyamf
+import_file
