@@ -1,4 +1,5 @@
 # coding: utf8
+import socket
 
 from socket_server.base.common import Common, client_try
 from socket_server.base.packer import Packer
@@ -6,7 +7,6 @@ import select
 
 
 class BaseClient(Common, Packer):
-
     count = 0
 
     def __init__(self, sock, addr, talker):
@@ -32,19 +32,21 @@ class BaseClient(Common, Packer):
     def recv(self):
         data = self.sock.recv(self.size or 4)
         if not data:
-            self.unregister()
+            self.hung_up()
         else:
             if not self.size:
                 self.size = self.packsize(data)
             else:
                 self.request += data
                 if len(self.request) >= self.size:
-                    self.listen(self.unpack(self.size, self.request[:self.size]))
+                    self.listen(
+                        self.unpack(self.size, self.request[:self.size])
+                    )
                     self.request = b''
                     self.size = None
 
     def listen(self, request):
-        ''' What to do with request? '''
+        """ What to do with request? """
 
     def add_resp(self, resp):
         self.queue.insert(0, resp)
@@ -65,8 +67,8 @@ class BaseClient(Common, Packer):
             self.response = b''
             self.refresh_state()
 
-    def unregister(self):
-        self.talker.unregister(self.fileno)
+    def disconnect(self, cid):
+        raise Exception('template method')
 
     def close(self):
         self.sock.close()
@@ -77,11 +79,12 @@ class BaseClient(Common, Packer):
         return len(self.queue) > 0
 
     def modify(self, etype):
-        try:
-            self.poll.modify(self.fileno, etype)
-        except:
-            self.unregister()
+        self.poll.modify(self.fileno, etype)
 
-    def refresh_state(self, etype=None):
+    def hung_up(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.modify(select.EPOLLHUP)
+
+    def refresh_state(self):
         etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
         self.modify(etype)

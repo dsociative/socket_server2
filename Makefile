@@ -12,7 +12,7 @@ venv:
 	. $(ENV)/bin/activate
 
 	@echo Installing dependencies
-	./$(ENV)/bin/pip install --user-mirrors .
+	./$(ENV)/bin/pip install --use-mirrors .
 
 clean:
 	rm -rf $(ENV)

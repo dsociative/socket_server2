@@ -1,4 +1,5 @@
 # coding: utf8
+import logging
 
 from handler import BaseHandler
 from packer import Packer

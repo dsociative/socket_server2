@@ -3,7 +3,6 @@
 import sys
 import traceback
 import logging
-import select
 import socket
 
 
@@ -32,10 +31,10 @@ def client_try(f):
         try:
             return f(self, *args, **kw)
         except socket.error:
-            self.modify(select.EPOLLERR)
+            pass
         except:
-            err_str = '%s %s' % (self.id, f.func_name)
-            logging.error(err_str, exc_info=True)
-            self.modify(select.EPOLLERR)
+            logging.error('%s %s' % (self.id, f.func_name), exc_info=True)
+
+        self.hung_up()
 
     return w
