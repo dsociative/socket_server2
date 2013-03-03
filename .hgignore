@@ -1,6 +1,0 @@
-glob:.project
-glob:.pydevproject
-glob:.settings
-glob:*.pyc
-syntax: glob
-*.log
