@@ -40,9 +40,9 @@ class BaseHandler(Common, Thread):
         self.clients[sock.fileno()] = sock
         self.epoll_register(sock, select.EPOLLIN | select.EPOLLOUT)
 
-    def modify(self, sock, type):
+    def modify(self, fileno, type):
         try:
-            self.epoll.modify(sock.fileno(), type)
+            self.epoll.modify(fileno, type)
         except:
             logging.error('modify error', exc_info=True)
 

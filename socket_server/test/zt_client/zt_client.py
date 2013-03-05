@@ -75,6 +75,14 @@ class Zt_Clien_Socket(Zt_Base):
         self.wait_disconnect(client)
         self.wait_equal(lambda: self.talker.clients.by_fileno.values(), [])
 
+    def test_hung_up_disconned(self):
+        client = self.first_client()
+        self.sender.socket.close()
+        time.sleep(2)
+        client.hung_up()
+        self.wait_disconnect(client)
+        self.wait_equal(lambda: self.talker.clients.by_fileno.values(), [])
+
     def test_disconnect_on_error(self):
         client = self.first_client()
         data = self.sender.encode({'1': '3'}).replace('}', '^')

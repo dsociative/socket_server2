@@ -14,7 +14,6 @@ class BaseClient(Common, Packer):
 
         self.sock = sock
         self.talker = talker
-        self.poll = talker.epoll
 
         self.fileno = sock.fileno()
         self.queue = []
@@ -79,11 +78,15 @@ class BaseClient(Common, Packer):
         return len(self.queue) > 0
 
     def modify(self, etype):
-        self.poll.modify(self.fileno, etype)
+        self.talker.modify(self.fileno, etype)
 
     def hung_up(self):
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.modify(select.EPOLLHUP)
+        try:
+            self.sock.shutdown(socket.SHUT_RDWR)
+        except socket.error:
+            self.talker.unregister(self.fileno)
+        else:
+            self.modify(select.EPOLLHUP)
 
     def refresh_state(self):
         etype = select.EPOLLOUT if self.has_reponse else select.EPOLLIN
