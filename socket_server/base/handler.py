@@ -38,7 +38,7 @@ class BaseHandler(Common, Thread):
 
     def register(self, sock, address):
         self.clients[sock.fileno()] = sock
-        self.epoll_register(sock, select.EPOLLIN | select.EPOLLOUT)
+        self.epoll_register(sock, select.EPOLLIN)
 
     def modify(self, fileno, type):
         try:
