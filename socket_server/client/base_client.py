@@ -58,7 +58,10 @@ class BaseClient(Common, Packer):
     @client_try
     def reply(self):
         if not self.response:
-            self.response = self.encode(self.queue.pop())
+            if self.has_reponse:
+                self.response = self.encode(self.queue.pop())
+            else:
+                return self.refresh_state()
 
         self.send()
 
