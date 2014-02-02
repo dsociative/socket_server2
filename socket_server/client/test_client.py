@@ -1,4 +1,5 @@
 # coding: utf8
+import logging
 
 from socket_server.client.simple_client import SimpleClient
 

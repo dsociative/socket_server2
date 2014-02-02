@@ -1,6 +1,5 @@
 # coding: utf8
 
-from redis.client import Redis
 from socket_server.base.clients_map import ClientsMap
 from socket_server.base.common import Common, trace
 from socket_server.client.simple_client import SimpleClient
@@ -14,8 +13,7 @@ class BaseHandler(Common, Thread):
 
     epoll_timeout = 2
 
-    def __init__(self, port=8885, address='', redis=Redis(),
-                 client_cls=SimpleClient):
+    def __init__(self, port=8885, address='', client_cls=SimpleClient):
         Thread.__init__(self)
         self.client_cls = client_cls
         self.port = port
@@ -25,7 +23,7 @@ class BaseHandler(Common, Thread):
         self.epoll = select.epoll()
         self.epoll_register(self.socket)
 
-        self.clients = ClientsMap(self)
+        self.clients = ClientsMap()
 
     def create_socket(self, port, address):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -38,27 +36,25 @@ class BaseHandler(Common, Thread):
     def epoll_register(self, socket, type=select.EPOLLIN):
         self.epoll.register(socket.fileno(), type)
 
-    def register(self, sock, address, type=select.POLLIN):
+    def register(self, sock, address):
         self.clients[sock.fileno()] = sock
-        self.epoll_register(sock, type)
+        self.epoll_register(sock, select.EPOLLIN)
 
-        logging.debug('register client %s' % len(self.clients))
-
-    def modify(self, sock, type):
+    def modify(self, fileno, type):
         try:
-            self.epoll.modify(sock.fileno(), type)
+            self.epoll.modify(fileno, type)
         except:
-            trace()
+            logging.error('modify error', exc_info=True)
 
-    def unregister(self, filleno):
-        sock = self.clients.get(filleno)
-        if sock:
+    def unregister(self, fileno):
+        client = self.clients.get(fileno)
+        if client:
             try:
-                self.epoll.unregister(filleno)
-                sock.close()
+                client.close()
+                self.epoll.unregister(fileno)
             except:
-                trace()
-            del self.clients[filleno]
+                logging.error('unregister %s' % fileno, exc_info=True)
+            del self.clients[fileno]
 
     def accept(self):
         sock, address = self.socket.accept()
@@ -66,8 +62,6 @@ class BaseHandler(Common, Thread):
         return self.register(sock, address)
 
     def run(self):
-        self.request = {}
-
         while not self.epoll.closed:
             events = self.epoll.poll(self.epoll_timeout)
             for no, event in events:
