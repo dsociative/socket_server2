@@ -1,9 +1,10 @@
 # coding: utf8
 
 from socket import socket
+
 from socket_server.base.talker import Talker
 from socket_server.client.base_client import BaseClient
-from test import TestCase
+from socket_server.test import TestCase
 
 
 class BaseClientTest(TestCase):

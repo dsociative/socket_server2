@@ -1,16 +1,14 @@
 # coding: utf8
-from ConfigParser import ConfigParser
 import logging
-import os
 import time
-import unittest
+import unittest2
 
 logging_frm = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 logging_level = logging.DEBUG
 logging.basicConfig(format=logging_frm, level=logging_level)
 
 
-class TestCase(unittest.TestCase):
+class TestCase(unittest2.TestCase):
 
     def wait_equal(self, attr, expected):
         MAX_COUNT = 30

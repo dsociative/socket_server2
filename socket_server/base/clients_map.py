@@ -1,35 +1,32 @@
 # coding: utf8
+import logging
 
 
 class ClientsMap(object):
 
-    def __init__(self, talker):
-        self.talker = talker
-        self.clients = {}
-        self.users = {}
+    def __init__(self):
+        self.by_fileno = {}
+        self.by_cid = {}
 
     def __setitem__(self, fileno, client):
-        self.clients[fileno] = client
-        self.users[client.id] = client
-
-    def __getitem__(self, fileno):
-        return self.get(fileno)
+        self.by_fileno[fileno] = client
+        self.by_cid[client.id] = client
 
     def get(self, fileno):
-        return self.clients.get(fileno)
+        return self.by_fileno.get(fileno)
 
     def __delitem__(self, fileno):
-        del self.users[self.clients[fileno].id]
-        del self.clients[fileno]
+        client = self.by_fileno.pop(fileno, None)
+        if client:
+            del self.by_cid[client.id]
+        else:
+            logging.warning('client not found in by_fileno')
 
-    def queue(self, uids, msg):
-        for uid in uids:
-            client = self.users.get(uid)
+    def queue(self, cids, msg):
+        for uid in cids:
+            client = self.by_cid.get(uid)
             if client:
                 client.add_resp(msg)
 
-    def send(self, msg, *uids):
-        msg['uids'] = uids
-
     def __len__(self):
-        return len(self.clients)
+        return len(self.by_fileno)
